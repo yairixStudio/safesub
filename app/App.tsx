@@ -48,6 +48,7 @@ function Root(){
   const [profileOpen, setProfileOpen] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [busy, setBusy] = useState(false);
+  const [pagerLocked, setPagerLocked] = useState(false);   /* chart pan/pinch in progress */
   const pager = useRef<PagerView>(null);
   const searchRef = useRef<TextInput>(null);
   const phys = (logical:number) => dir.rtl ? PANES-1-logical : logical;
@@ -75,7 +76,7 @@ function Root(){
   const initial = profile.name ? profile.name[0].toUpperCase() : '';
   const filled = !!(profile.name||profile.age||profile.weight||profile.sex||profile.meds);
   const panes = [
-    <View key="p0" style={{flex:1}}><IntensityPane msgs={msgs} onSend={respond} busy={busy}/></View>,
+    <View key="p0" style={{flex:1}}><IntensityPane msgs={msgs} onSend={respond} busy={busy} onLock={setPagerLocked}/></View>,
     <View key="p1" style={{flex:1}}><SubstancesPane onLog={openLog} onCtx={(id,x,y)=>setCtx({id,x,y})} searchRef={searchRef}/></View>,
     <View key="p2" style={{flex:1}}><JournalPane onEdit={key=>setSheet({key, mode:'edit'})}/></View>,
   ];
@@ -105,7 +106,7 @@ function Root(){
         </View>
       </View>
 
-      <PagerView key={lang} ref={pager} style={{flex:1}} initialPage={phys(page)} onPageSelected={e=>setPage(dir.rtl ? PANES-1-e.nativeEvent.position : e.nativeEvent.position)}>
+      <PagerView key={lang} ref={pager} style={{flex:1}} scrollEnabled={!pagerLocked} initialPage={phys(page)} onPageSelected={e=>setPage(dir.rtl ? PANES-1-e.nativeEvent.position : e.nativeEvent.position)}>
         {ordered}
       </PagerView>
 

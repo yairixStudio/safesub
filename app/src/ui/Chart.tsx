@@ -10,7 +10,7 @@ import {T} from './common';
 
 /* Intensity chart — port of renderChartSvg. Pan = scroll time, pinch = zoom.
    The x axis always runs left→right, whatever the UI language. */
-export function Chart(){
+export function Chart({onLock}:{onLock?:(locked:boolean)=>void}){
   const {colors, tr, eng, byId, dir} = useApp();
   const [size, setSize] = useState({w:0,h:0});
   const [view, setView] = useState({t0:-240, span:720});
@@ -19,10 +19,12 @@ export function Chart(){
 
   const clamp=(t0:number, span:number)=>{ span=Math.max(120,Math.min(2880,span)); t0=Math.max(-2880,Math.min(1440-span,t0)); return {t0,span}; };
   const pan = Gesture.Pan().minDistance(4).runOnJS(true)
-    .onBegin(()=>{ start.current.t0=view.t0; start.current.span=view.span; })
+    .onBegin(()=>{ onLock?.(true); start.current.t0=view.t0; start.current.span=view.span; })
+    .onFinalize(()=>onLock?.(false))
     .onUpdate(ev=>{ if(!size.w) return; setView(v=>clamp(start.current.t0 - ev.translationX*v.span/size.w, v.span)); });
   const pinch = Gesture.Pinch().runOnJS(true)
-    .onBegin(ev=>{ start.current.span=view.span; start.current.anchorF=size.w?ev.focalX/size.w:.5; start.current.anchorT=view.t0+start.current.anchorF*view.span; })
+    .onFinalize(()=>onLock?.(false))
+    .onBegin(ev=>{ onLock?.(true); start.current.span=view.span; start.current.anchorF=size.w?ev.focalX/size.w:.5; start.current.anchorT=view.t0+start.current.anchorF*view.span; })
     .onUpdate(ev=>{ const span=start.current.span/Math.max(.2,ev.scale); const {t0,span:sp}=clamp(start.current.anchorT-start.current.anchorF*span, span); setView({t0,span:sp}); });
   const gesture = Gesture.Simultaneous(pan, pinch);
 

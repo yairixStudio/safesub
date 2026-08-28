@@ -8,7 +8,7 @@ import {Chart} from './Chart';
 
 export interface Msg { cls:'user'|'ai'|'typing'; txt:string }
 
-export function IntensityPane({msgs, onSend, busy}:{msgs:Msg[]; onSend:(q:string)=>void; busy:boolean}){
+export function IntensityPane({msgs, onSend, busy, onLock}:{msgs:Msg[]; onSend:(q:string)=>void; busy:boolean; onLock?:(l:boolean)=>void}){
   const {colors, dir, tr, eng, byId, profile} = useApp();
   const [txt, setTxt] = useState('');
   const scroll = useRef<ScrollView>(null);
@@ -18,7 +18,7 @@ export function IntensityPane({msgs, onSend, busy}:{msgs:Msg[]; onSend:(q:string
   return (
     <View style={{flex:1, paddingHorizontal:16}}>
       <Row style={{paddingTop:4, paddingBottom:8, paddingHorizontal:2}}><T f="sansSemi" size={12} c={colors.haze} style={{letterSpacing:.5}}>{tr.t('intensity.title')}</T></Row>
-      <Chart/>
+      <Chart onLock={onLock}/>
       <ScrollView ref={scroll} style={{flex:1}} contentContainerStyle={{paddingBottom:8}} keyboardShouldPersistTaps="handled">
         <View testID="ai-read">
           <Row gap={6} style={{marginTop:4, marginBottom:7}}>
