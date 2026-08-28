@@ -1,0 +1,14 @@
+# helper: get past onboarding if it is showing
+appId: studio.yairix.safesub
+---
+- runFlow:
+    when:
+      visible:
+        id: "onboarding"
+    commands:
+      - tapOn:
+          id: "onb-next"
+      - tapOn:
+          id: "onb-next"
+      - tapOn:
+          id: "onb-skip"

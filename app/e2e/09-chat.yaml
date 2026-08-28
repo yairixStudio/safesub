@@ -1,0 +1,30 @@
+# Ask the advisor; the local responder answers in the active language.
+appId: studio.yairix.safesub
+---
+- launchApp:
+    clearState: true
+- runFlow: _skip-onboarding.yaml
+- runFlow:
+    file: _add.yaml
+    env:
+      Q: "קנאביס"
+      ID: "can"
+- tapOn:
+    id: "tile-can"
+- tapOn:
+    id: "sheet-ai"
+- assertVisible:
+    id: "chat-input"
+- assertVisible: ".*מה כדאי לדעת על קנאביס.*"
+- extendedWaitUntil:
+    visible: ".*לא ייעוץ רפואי.*"
+    timeout: 5000
+- tapOn:
+    id: "chat-input"
+- inputText: "אפשר לשתות אלכוהול?"
+- tapOn:
+    id: "chat-send"
+- extendedWaitUntil:
+    visible: ".*גרינ-אאוט.*"
+    timeout: 5000
+- takeScreenshot: 09-chat

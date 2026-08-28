@@ -1,0 +1,36 @@
+# Search the catalogue, add a cigarette, log it with a sub-type and quantity, see it in the journal.
+appId: studio.yairix.safesub
+---
+- launchApp
+- runFlow: _skip-onboarding.yaml
+- tapOn:
+    id: "search"
+- inputText: "סיג"
+- assertVisible:
+    id: "hit-cig"
+- takeScreenshot: 02-search-hits
+- tapOn:
+    id: "hit-cig"
+- assertVisible:
+    id: "tile-cig"
+- tapOn:
+    id: "tile-cig"
+- assertVisible:
+    id: "log-sheet"
+- assertVisible: "סיגריה"
+- tapOn:
+    id: "sub-reg"
+- tapOn:
+    id: "qty-plus"
+- assertVisible: "2"
+- takeScreenshot: 02-sheet
+- tapOn:
+    id: "sheet-save"
+- assertNotVisible:
+    id: "log-sheet"
+- assertVisible: "(1)"
+- takeScreenshot: 02-live-tile
+- tapOn:
+    id: "nav-log"
+- assertVisible: "רגילה"
+- takeScreenshot: 02-journal

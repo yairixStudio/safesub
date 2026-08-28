@@ -1,0 +1,29 @@
+# Delete all data (two taps) → back to onboarding, list empty afterwards.
+appId: studio.yairix.safesub
+---
+- launchApp:
+    clearState: true
+- runFlow: _skip-onboarding.yaml
+- runFlow:
+    file: _add.yaml
+    env:
+      Q: "תה"
+      ID: "tea"
+- tapOn:
+    id: "btn-settings"
+- scrollUntilVisible:
+    element:
+      id: "wipe"
+- tapOn:
+    id: "wipe"
+- assertVisible: "לחיצה נוספת תמחק הכל"
+- takeScreenshot: 10-wipe-armed
+- tapOn:
+    id: "wipe"
+- assertVisible:
+    id: "onboarding"
+- runFlow: _skip-onboarding.yaml
+- assertVisible:
+    id: "grid-empty"
+- assertNotVisible:
+    id: "tile-tea"

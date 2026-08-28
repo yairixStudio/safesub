@@ -1,0 +1,37 @@
+# Alcohol active, then ketamine: the sheet must flag the combination as dangerous,
+# and the intensity reading must name it.
+appId: studio.yairix.safesub
+---
+- launchApp:
+    clearState: true
+- runFlow: _skip-onboarding.yaml
+- runFlow:
+    file: _add.yaml
+    env:
+      Q: "אלכוהול"
+      ID: "alc"
+- tapOn:
+    id: "tile-alc"
+- tapOn:
+    id: "when-30"
+- tapOn:
+    id: "sheet-save"
+- runFlow:
+    file: _add.yaml
+    env:
+      Q: "קטמין"
+      ID: "ket"
+- tapOn:
+    id: "tile-ket"
+- assertVisible:
+    id: "sheet-flag"
+- assertVisible: "מסוכן.*"
+- takeScreenshot: 03-danger-flag
+- tapOn:
+    id: "sheet-save"
+- tapOn:
+    id: "nav-intensity"
+- assertVisible:
+    id: "chart"
+- assertVisible: ".*שילוב פעיל.*"
+- takeScreenshot: 03-intensity-combo

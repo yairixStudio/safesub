@@ -1,0 +1,41 @@
+# Profile with lithium as regular medication: logging LSD must raise a danger flag from the profile.
+appId: studio.yairix.safesub
+---
+- launchApp:
+    clearState: true
+- runFlow: _skip-onboarding.yaml
+- tapOn:
+    id: "btn-profile"
+- assertVisible:
+    id: "page-profile"
+- tapOn:
+    id: "p-name"
+- inputText: "Dana"
+- tapOn:
+    id: "p-age"
+- inputText: "31"
+- tapOn:
+    id: "sex-f"
+- tapOn:
+    id: "p-meds"
+- inputText: "ליתיום"
+- hideKeyboard
+- takeScreenshot: 06-profile
+- tapOn:
+    id: "p-save"
+- assertNotVisible:
+    id: "page-profile"
+- assertVisible: "D"
+- runFlow:
+    file: _add.yaml
+    env:
+      Q: "lsd"
+      ID: "lsd"
+- tapOn:
+    id: "tile-lsd"
+- assertVisible:
+    id: "sheet-flag"
+- assertVisible: ".*ליתיום.*"
+- takeScreenshot: 06-lithium-flag
+- tapOn:
+    id: "sheet-undo"

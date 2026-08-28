@@ -1,0 +1,31 @@
+# Open an entry from the journal, move it back in time, then delete it.
+appId: studio.yairix.safesub
+---
+- launchApp:
+    clearState: true
+- runFlow: _skip-onboarding.yaml
+- runFlow:
+    file: _add.yaml
+    env:
+      Q: "קפה"
+      ID: "cof"
+- tapOn:
+    id: "tile-cof"
+- tapOn:
+    id: "sheet-save"
+- tapOn:
+    id: "nav-log"
+- assertVisible: "קפה"
+- tapOn: "קפה"
+- assertVisible: "עריכת רישום"
+- tapOn:
+    id: "when-60"
+- takeScreenshot: 04-edit
+- tapOn:
+    id: "sheet-save"
+- assertVisible: "לפני שעה"
+- tapOn: "קפה"
+- tapOn:
+    id: "sheet-undo"
+- assertVisible: ".*היומן ריק.*"
+- takeScreenshot: 04-empty-journal

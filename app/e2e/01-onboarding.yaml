@@ -1,0 +1,40 @@
+# First run: Hebrew by default, language switch in the dropdown, five steps, empty grid.
+appId: studio.yairix.safesub
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: "onboarding"
+- assertVisible: "לפני שמתחילים"
+- takeScreenshot: 01-onb-he
+- tapOn:
+    id: "onb-lang"
+- tapOn:
+    id: "onb-lang-en"
+- assertVisible: "Before we start"
+- takeScreenshot: 01-onb-en
+- tapOn:
+    id: "onb-lang"
+- tapOn:
+    id: "onb-lang-he"
+- assertVisible: "לפני שמתחילים"
+- tapOn:
+    id: "onb-next"
+- assertVisible: "הנתונים שלך לא יוצאים מהמכשיר"
+- tapOn:
+    id: "onb-next"
+- assertVisible: "תיעוד בטאפ אחד"
+- tapOn:
+    id: "onb-next"
+- tapOn:
+    id: "onb-next"
+- assertVisible: "יועץ שמכיר את ההקשר"
+- tapOn:
+    id: "onb-next"
+- assertNotVisible:
+    id: "onboarding"
+- assertVisible:
+    id: "tile-add"
+- assertVisible:
+    id: "grid-empty"
+- takeScreenshot: 01-empty-grid

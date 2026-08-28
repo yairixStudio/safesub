@@ -1,0 +1,35 @@
+# Long press → learn page; long press → remove from list.
+appId: studio.yairix.safesub
+---
+- launchApp:
+    clearState: true
+- runFlow: _skip-onboarding.yaml
+- runFlow:
+    file: _add.yaml
+    env:
+      Q: "mdma"
+      ID: "mdma"
+- longPressOn:
+    id: "tile-mdma"
+- assertVisible:
+    id: "ctx-menu"
+- takeScreenshot: 07-ctx
+- tapOn:
+    id: "ctx-learn"
+- assertVisible:
+    id: "page-learn"
+- assertVisible: "MDMA"
+- assertVisible: ".*בסיס הנתונים.*"
+- takeScreenshot: 07-learn
+- scroll
+- takeScreenshot: 07-learn-scrolled
+- tapOn:
+    id: "page-learn-back"
+- longPressOn:
+    id: "tile-mdma"
+- tapOn:
+    id: "ctx-remove"
+- assertNotVisible:
+    id: "tile-mdma"
+- assertVisible:
+    id: "grid-empty"

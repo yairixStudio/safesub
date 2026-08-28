@@ -1,0 +1,28 @@
+# Retroactive entry, then the app is killed and relaunched: everything must survive.
+appId: studio.yairix.safesub
+---
+- launchApp:
+    clearState: true
+- runFlow: _skip-onboarding.yaml
+- runFlow:
+    file: _add.yaml
+    env:
+      Q: "וייפ"
+      ID: "vape"
+- tapOn:
+    id: "tile-vape"
+- tapOn:
+    id: "when-15"
+- tapOn:
+    id: "sheet-save"
+- stopApp
+- launchApp
+- assertNotVisible:
+    id: "onboarding"
+- assertVisible:
+    id: "tile-vape"
+- assertVisible: "(1)"
+- tapOn:
+    id: "nav-log"
+- assertVisible: "לפני 15 דק׳"
+- takeScreenshot: 11-persisted

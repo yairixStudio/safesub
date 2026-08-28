@@ -69,15 +69,31 @@ node test/run.mjs        # PASS = העקומות לא זזו
 
 - ⚠️ **שמירה — רק לדפדפן.** מאז 2026-08-28 הדמו שומר הכל (`LOG`, `MY`, פרופיל, הגדרות, חומרים מותאמים) ב-`localStorage` דרך `persist()/restore()`. זה **לא** `store.js` של stack.md: ב-native WKWebView מפנה localStorage תחת לחץ, ולכן פעולה 2 עדיין חוסמת.
 - ❌ **קריאת ה-AI לא יכולה לעלות לאוויר.** `fetch('https://api.anthropic.com/v1/messages')` בלי אימות עובד רק בתוך sandbox של Claude artifacts. גם מזהה המודל שבקוד ישן.
-- ❌ אין build system, אין הפרדה למודולים, אין מעטפת native.
+- ✅ ~~אין build system, אין הפרדה למודולים, אין מעטפת native~~ — יש: `app/` (Expo, מודולים, Android build). iOS טרם נבדק.
 
 ---
 
 ## הסטאק
 
-**Vite + Capacitor.** שומר 100% מהעיצוב והלוגיקה הקיימים, ומייצר iOS + Android + דפדפן מאותו build. **לא React Native, לא Flutter** — שניהם דורשים שכתוב מלא של ה-CSS, ה-SVG, ה-RTL והמחוות.
+**React Native (Expo SDK 57, TypeScript) — הוחלט ב-2026-08-28**, בניגוד להמלצת stack.md המקורית (Vite+Capacitor). האפליקציה חיה ב-[`app/`](app/) והיא **הקוד**; `demo-reference.html` נשאר דמו-ייחוס לעיצוב ולמתמטיקה.
 
-הנימוק המלא, ההשוואה, וצ'קליסט הפורט: [`docs/stack.md`](docs/stack.md).
+```
+app/
+  src/engine/     catalog.ts · rules.ts (GENERATED מהדמו) · pk.ts · interactions.ts · types.ts
+  src/i18n/       he.ts · en.ts (GENERATED) · index.ts (t, makeTr)
+  src/state/      store.ts (AsyncStorage) · AppContext.tsx (מנוע/מתרגם/ערכת-נושא למחזור)
+  src/logic/      advisor.ts (קריאת מצב, תקציר אנונימי, מענה מקומי)
+  src/ui/         Tile · SubstancesPane · Chart · IntensityPane · JournalPane · LogSheet · CtxMenu · Onboarding · pages/
+  __tests__/      pk.golden.test.ts — אותו golden, אותן 2,316 דגימות, drift 0
+  e2e/            Maestro flows — סימולציות משתמש על אמולטור אנדרואיד (./e2e/run.sh)
+```
+
+**כללי ברזל של הפורט:**
+- `catalog.ts`, `rules.ts`, `he.ts`, `en.ts`, `icons.ts` **נוצרים** מהדמו (`scratchpad/gen-ts.mjs` בסשן; הלוגיקה: לחלץ את `SUBS`/`RISK`/`L` מ-`demo-reference.html`). שינוי תוכן → קודם בדמו, ואז מייצרים מחדש. אל תערוך אותם ביד.
+- כיווניות (RTL/LTR) היא של האפליקציה, לא של Android: `I18nManager.allowRTL(false)` + `supportsRtl="false"` (plugin `plugins/withNoRtl.js`). כל שורה משתמשת ב-`dir.row`, כל טקסט ב-`dir.textAlign`. אל תשתמש ב-`start`/`end` של RN.
+- `cd app && npm test` (golden) ו-`npm run typecheck` לפני כל קומיט. `npm run android:release` בונה ומתקין על האמולטור.
+
+ההשוואה המקורית (ולמה בכל זאת RN): [`docs/stack.md`](docs/stack.md).
 
 ---
 
@@ -87,8 +103,8 @@ node test/run.mjs        # PASS = העקומות לא זזו
 
 | # | פעולה | מסמך |
 |---|---|---|
-| 1 | Vite scaffold; פיצול `demo-reference.html` למודולים | [stack](docs/stack.md) |
-| 2 | **[חוסם]** `store.js` — שמירה מקומית (Preferences/SQLite ב-native, IndexedDB בדפדפן) | [stack](docs/stack.md) |
+| 1 | ~~Vite scaffold~~ → **נעשה ב-RN** (`app/`), 2026-08-28 | [stack](docs/stack.md) |
+| 2 | ~~`store.js`~~ → **נעשה**: `app/src/state/store.ts` על AsyncStorage (SQLite ב-Android) | [stack](docs/stack.md) |
 | 3 | **[חוסם להגשה]** proxy ל-AI + שכבת סירוב דטרמיניסטית למינונים | [ai-advisor](docs/ai-advisor.md) |
 | 4 | פונטים מקומית, safe-area, אימות `tel:101`, חישוב מחדש ב-resume | [stack](docs/stack.md) |
 | 5 | פרסום מסמך המתודולוגיה (מקורות `tp`/`hl`/`RISK`) — נדרש ל-1.4.1 | [app-store](docs/app-store.md) |

@@ -1,0 +1,22 @@
+# Something not in the catalogue becomes a custom substance.
+appId: studio.yairix.safesub
+---
+- launchApp:
+    clearState: true
+- runFlow: _skip-onboarding.yaml
+- tapOn:
+    id: "search"
+- inputText: "xyzzy"
+- assertVisible:
+    id: "add-custom"
+- takeScreenshot: 08-no-hit
+- tapOn:
+    id: "add-custom"
+- assertVisible: "xyzzy"
+- tapOn: "xyzzy"
+- assertVisible:
+    id: "log-sheet"
+- tapOn:
+    id: "sheet-save"
+- assertVisible: "(1)"
+- takeScreenshot: 08-custom-tile

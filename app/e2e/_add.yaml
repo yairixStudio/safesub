@@ -1,0 +1,11 @@
+# helper: add ${ID} to the list via search text ${Q}
+appId: studio.yairix.safesub
+---
+- tapOn:
+    id: "search"
+- eraseText
+- inputText: ${Q}
+- tapOn:
+    id: "hit-${ID}"
+- assertVisible:
+    id: "tile-${ID}"

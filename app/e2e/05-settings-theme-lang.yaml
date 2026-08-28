@@ -1,0 +1,33 @@
+# Settings page: light/dark, English/Hebrew, back button in both directions.
+appId: studio.yairix.safesub
+---
+- launchApp
+- runFlow: _skip-onboarding.yaml
+- tapOn:
+    id: "btn-settings"
+- assertVisible:
+    id: "page-settings"
+- assertVisible: "הגדרות"
+- tapOn:
+    id: "theme-light"
+- takeScreenshot: 05-light-he
+- tapOn:
+    id: "lang-en"
+- assertVisible: "Settings"
+- takeScreenshot: 05-light-en
+- tapOn:
+    id: "theme-dark"
+- takeScreenshot: 05-dark-en
+- tapOn:
+    id: "page-settings-back"
+- assertNotVisible:
+    id: "page-settings"
+- assertVisible: "SUBSTANCES"
+- takeScreenshot: 05-main-en
+- tapOn:
+    id: "btn-settings"
+- tapOn:
+    id: "lang-he"
+- tapOn:
+    id: "page-settings-back"
+- assertVisible: "חומרים"
