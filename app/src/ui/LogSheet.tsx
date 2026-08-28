@@ -109,13 +109,12 @@ export function LogSheet({entryKey, mode, onClose, onAskAi}:{entryKey:string|nul
           ) : null}
 
           <T f="mono" size={9.5} c={colors.dust} style={{letterSpacing:.5, marginBottom:5}}>{tr.t('pop.when')}</T>
-          <Row gap={7} align="flex-start" style={{marginBottom:10}}>
-            <View style={{flex:1, flexDirection:dir.row, flexWrap:'wrap', gap:6}}>
-              {([0,5,15,30,60] as const).map(m=><Chip key={m} testID={`when-${m}`} label={tr.t('pop.w'+m)} on={whenSel===m} onPress={()=>setWhen(m)}/>)}
-            </View>
+          {/* chips and the exact-time field flow together in one wrapping row */}
+          <View style={{flexDirection:dir.row, flexWrap:'wrap', alignItems:'center', gap:6, marginBottom:10}}>
+            {([0,5,15,30,60] as const).map(m=><Chip key={m} testID={`when-${m}`} label={tr.t('pop.w'+m)} on={whenSel===m} onPress={()=>setWhen(m)}/>)}
             <TextInput testID="when-time" value={timeTxt} onChangeText={setTimeTxt} onBlur={()=>applyTime(timeTxt)} onSubmitEditing={()=>applyTime(timeTxt)} placeholder="--:--" placeholderTextColor={colors.dust} keyboardType="numbers-and-punctuation" maxLength={5}
-              style={{width:84, height:33, borderRadius:3, backgroundColor:colors.slate1, borderWidth:1, borderColor:whenSel==='time'?alpha(colors.iris,.5):colors.lineHard, color:whenSel==='time'?colors.iris:colors.haze, fontFamily:'IBMPlexMono_400Regular', fontSize:12, paddingVertical:0, paddingHorizontal:8, textAlign:'center'}}/>
-          </Row>
+              style={{width:84, height:34, borderRadius:3, backgroundColor:colors.slate1, borderWidth:1, borderColor:whenSel==='time'?alpha(colors.iris,.5):colors.lineHard, color:whenSel==='time'?colors.iris:colors.haze, fontFamily:'IBMPlexMono_400Regular', fontSize:12, paddingVertical:0, paddingHorizontal:8, textAlign:'center'}}/>
+          </View>
 
           <Row gap={10} align="flex-end" style={{marginBottom:10}}>
             <View>

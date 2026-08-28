@@ -11,6 +11,15 @@ the device.
 
 > The full orientation for contributors and AI agents is in [`CLAUDE.md`](CLAUDE.md) (Hebrew).
 
+## Screenshots (Android emulator, captured by the Maestro flows)
+
+| | | | |
+|---|---|---|---|
+| ![](docs/screenshots/01-onb-he.png) | ![](docs/screenshots/01-onb-en.png) | ![](docs/screenshots/01-empty-grid.png) | ![](docs/screenshots/02-search-hits.png) |
+| ![](docs/screenshots/02-live-tile.png) | ![](docs/screenshots/02-sheet.png) | ![](docs/screenshots/03-danger-flag.png) | ![](docs/screenshots/03-intensity-combo.png) |
+| ![](docs/screenshots/04-edit.png) | ![](docs/screenshots/06-lithium-flag.png) | ![](docs/screenshots/07-ctx.png) | ![](docs/screenshots/07-learn.png) |
+| ![](docs/screenshots/09-chat.png) | ![](docs/screenshots/05-light-he.png) | ![](docs/screenshots/05-main-en.png) | ![](docs/screenshots/10-wipe-armed.png) |
+
 ## Layout
 
 | path | what |
