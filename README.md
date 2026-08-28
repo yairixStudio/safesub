@@ -22,7 +22,7 @@ the device.
 | `app/e2e` | Maestro user-flow simulations for the Android emulator |
 | [`demo-reference.html`](demo-reference.html) | the original single-file reference demo — design and logic source of truth |
 | [`test/`](test/) | the demo's golden PK test |
-| [`docs/`](docs/) | stack decision, App Store strategy, AI-advisor architecture |
+| [`docs/`](docs/) | stack decision, App Store strategy, AI-advisor architecture, [testing](docs/testing.md) |
 
 ## Run
 

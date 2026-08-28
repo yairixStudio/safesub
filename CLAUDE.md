@@ -132,3 +132,4 @@ app/
 | [`docs/stack.md`](docs/stack.md) | החלטת הטכנולוגיה, ההשוואה ל-RN/Flutter, אחסון מקומי, צ'קליסט פורט |
 | [`docs/app-store.md`](docs/app-store.md) | אסטרטגיית כניסה ל-App Store ו-Play: הסעיפים, המלכודות, חבילת ההגשה, ערעור |
 | [`docs/ai-advisor.md`](docs/ai-advisor.md) | ארכיטקטורת ה-proxy, מה חוצה את הרשת, שכבת הסירוב, ה-system prompt |
+| [`docs/testing.md`](docs/testing.md) | שלוש שכבות הבדיקה: golden בדמו, Jest באפליקציה, 11 זרימות Maestro על אמולטור |
