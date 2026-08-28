@@ -70,7 +70,7 @@ export function LogSheet({entryKey, mode, onClose, onAskAi}:{entryKey:string|nul
     <>
       <Pressable testID="scrim" onPress={onClose} style={[StyleSheet.absoluteFill,{backgroundColor:colors.scrim}]}/>
       <Animated.View testID="log-sheet" onTouchStart={reset} style={[st.sheet,{backgroundColor:colors.slate2, borderTopColor:colors.lineHard, maxHeight:height*.92, paddingBottom:insets.bottom, transform:[{translateY:y.interpolate({inputRange:[0,1],outputRange:[0,height]})}]}]}>
-        {mode==='new' ? <View style={{height:2, backgroundColor:colors.lineHard, marginHorizontal:-16}}><Animated.View style={{height:2, backgroundColor:colors.ember, width:'100%', transformOrigin:dir.rtl?'right center':'left center', transform:[{scaleX:bar}]}}/></View> : null}
+        {mode==='new' ? <View importantForAccessibility="no-hide-descendants" style={{height:2, backgroundColor:colors.lineHard, marginHorizontal:-16}}><Animated.View style={{height:2, backgroundColor:colors.ember, width:'100%', transformOrigin:dir.rtl?'right center':'left center', transform:[{scaleX:bar}]}}/></View> : null}
         <ScrollView keyboardShouldPersistTaps="handled" bounces={false}>
           <Row gap={10} style={{paddingTop:12, paddingBottom:10}}>
             <View style={{width:34, height:34, borderRadius:2, alignItems:'center', justifyContent:'center', backgroundColor:alpha(tint,.13), borderWidth:1, borderColor:alpha(tint,.22)}}><Icon k={s.i} size={19} color={tint} strokeWidth={1.7}/></View>
@@ -78,7 +78,7 @@ export function LogSheet({entryKey, mode, onClose, onAskAi}:{entryKey:string|nul
               <Row gap={5}><View style={{width:4, height:4, borderRadius:2, backgroundColor:mode==='new'?colors.ember:colors.haze}}/><T f="mono" size={9.5} c={mode==='new'?colors.ember:colors.haze} style={{letterSpacing:.5}}>{mode==='new'?tr.t('pop.now'):tr.t('pop.edit')}</T></Row>
               <T f="sansSemi" size={16.5} testID="sheet-name" style={{letterSpacing:-.3}}>{tr.sn(s)}</T>
             </View>
-            {mode==='new' ? <T f="monoMed" size={17} c={colors.haze} testID="sheet-secs" style={{minWidth:24}} align={dir.end}>{String(secs)}</T> : null}
+            {mode==='new' ? <T f="monoMed" size={17} c={colors.haze} a11yHidden style={{minWidth:24}} align={dir.end}>{String(secs)}</T> : null}
           </Row>
 
           {best ? (

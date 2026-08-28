@@ -8,9 +8,12 @@ import {F, alpha} from '../theme/tokens';
 import {Icon} from './Icon';
 
 /* text with the app font, colour and direction defaults */
-export function T({children, f='sans', c, size=13, style, align, numberOfLines, testID}:{
+export function T({children, f='sans', c, size=13, style, align, numberOfLines, testID, a11yHidden}:{
   children?:React.ReactNode; f?:keyof typeof F; c?:string; size?:number; style?:StyleProp<TextStyle>;
   align?:'left'|'right'|'center'; numberOfLines?:number; testID?:string;
+  /* decorative text that changes constantly (a countdown): keep it out of the
+     accessibility tree so screen readers and UI drivers see a stable screen */
+  a11yHidden?:boolean;
 }){
   const {colors, dir} = useApp();
   /* Android picks paragraph direction from the first strong character, so a
@@ -21,7 +24,7 @@ export function T({children, f='sans', c, size=13, style, align, numberOfLines, 
   const mixed = /[A-Za-z]/.test(first) && /[\u0590-\u05FF]/.test(first);
   const opposite = mixed && (dir.rtl ? /[A-Za-z]/.test(strong) : /[\u0590-\u05FF]/.test(strong));
   const mark = opposite ? (dir.rtl ? '\u200F' : '\u200E') : '';
-  return <Text testID={testID} numberOfLines={numberOfLines} style={[{fontFamily:F[f], color:c||colors.bone, fontSize:size, textAlign:align||dir.textAlign, writingDirection:dir.rtl?'rtl':'ltr'}, style]}>{mark}{children}</Text>;
+  return <Text testID={testID} numberOfLines={numberOfLines} accessible={!a11yHidden} importantForAccessibility={a11yHidden?'no-hide-descendants':'auto'} style={[{fontFamily:F[f], color:c||colors.bone, fontSize:size, textAlign:align||dir.textAlign, writingDirection:dir.rtl?'rtl':'ltr'}, style]}>{mark}{children}</Text>;
 }
 
 /* a row laid out in reading direction */

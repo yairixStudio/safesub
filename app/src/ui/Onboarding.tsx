@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import Svg, {Path, Rect, Circle, Line, Text as SvgText} from 'react-native-svg';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -74,7 +74,12 @@ export function Onboarding(){
   const app = useApp(); const {colors, dir, tr, lang} = app;
   const [step, setStep] = useState(0);
   const [dd, setDd] = useState(false);
+  const [box, setBox] = useState<{x:number; y:number; w:number; h:number}|null>(null);
+  const btnRef = useRef<View>(null);
   const insets = useSafeAreaInsets();
+  /* the menu lives at the root (full-screen bounds) — a child that overflows its
+     parent is invisible to Android accessibility, i.e. to any UI driver */
+  const toggle = () => { if(dd){ setDd(false); return; } btnRef.current?.measureInWindow((x,y,w,h)=>{ setBox({x,y,w,h}); setDd(true); }); };
   const steps = tr.t('onb.steps') as {label:string; skip:boolean; title:string; body:string}[];
   const s = steps[step];
   return (
@@ -83,21 +88,11 @@ export function Onboarding(){
         <View style={{flexDirection:'row', alignItems:'baseline'}}>
           <T f="sansSemi" size={20} style={{letterSpacing:-.3}}>safe</T><T f="sansLight" size={20} c={colors.iris} style={{letterSpacing:-.3}}>sub</T>
         </View>
-        {/* full-width wrapper so the menu can be centred under the button with absolute coordinates */}
         <View style={{alignSelf:'stretch', alignItems:'center'}}>
-          <Pressable testID="onb-lang" onPress={()=>setDd(v=>!v)} accessibilityRole="button" style={{flexDirection:'row', alignItems:'center', gap:5, paddingVertical:4, paddingHorizontal:8, borderRadius:3, borderWidth:1, borderColor:dd?colors.lineHard:'transparent'}}>
+          <Pressable ref={btnRef} testID="onb-lang" onPress={toggle} accessibilityRole="button" style={{flexDirection:'row', alignItems:'center', gap:5, paddingVertical:4, paddingHorizontal:8, borderRadius:3, borderWidth:1, borderColor:dd?colors.lineHard:'transparent'}}>
             <T f="mono" size={10.5} c={dd?colors.haze:colors.dust} style={{letterSpacing:.3}}>{L[lang].name}</T>
             <Icon k="chevD" size={9} color={dd?colors.haze:colors.dust} strokeWidth={2}/>
           </Pressable>
-          {dd ? (
-            <View testID="onb-lang-menu" style={{position:'absolute', top:'100%', alignSelf:'center', marginTop:4, width:150, backgroundColor:colors.slate2, borderWidth:1, borderColor:colors.lineHard, borderRadius:3, overflow:'hidden', elevation:8, shadowColor:'#000', shadowOpacity:.4, shadowRadius:16, shadowOffset:{width:0,height:10}}}>
-              {(Object.keys(L) as Lang[]).map((k,i)=>(
-                <Pressable key={k} testID={`onb-lang-${k}`} onPress={()=>{ setDd(false); app.setLang(k); }} style={({pressed})=>({flexDirection:dir.row, alignItems:'center', gap:8, paddingVertical:10, paddingHorizontal:13, borderBottomWidth:i<Object.keys(L).length-1?1:0, borderBottomColor:colors.line, backgroundColor:pressed?colors.slate3:'transparent'})}>
-                  <View style={{width:5, height:5, borderRadius:3, backgroundColor:k===lang?colors.iris:'transparent'}}/>
-                  <T f="sansMed" size={13}>{L[k].name}</T>
-                </Pressable>))}
-            </View>
-          ) : null}
         </View>
       </View>
       <Pressable onPress={()=>setDd(false)} style={{flex:1, alignItems:'center', justifyContent:'center', paddingHorizontal:24}}>
@@ -112,6 +107,15 @@ export function Onboarding(){
           <T f="mono" size={10.5} c={colors.dust} align="center" style={{letterSpacing:.3}}>{tr.t('onb.skip')}</T>
         </Pressable>
       </View>
+      {dd && box ? (
+        <View testID="onb-lang-menu" style={{position:'absolute', top:box.y+box.h+4, left:box.x+box.w/2-75, width:150, backgroundColor:colors.slate2, borderWidth:1, borderColor:colors.lineHard, borderRadius:3, overflow:'hidden', elevation:8, shadowColor:'#000', shadowOpacity:.4, shadowRadius:16, shadowOffset:{width:0,height:10}}}>
+          {(Object.keys(L) as Lang[]).map((k,i)=>(
+            <Pressable key={k} testID={`onb-lang-${k}`} onPress={()=>{ setDd(false); app.setLang(k); }} style={({pressed})=>({flexDirection:dir.row, alignItems:'center', gap:8, paddingVertical:10, paddingHorizontal:13, borderBottomWidth:i<Object.keys(L).length-1?1:0, borderBottomColor:colors.line, backgroundColor:pressed?colors.slate3:'transparent'})}>
+              <View style={{width:5, height:5, borderRadius:3, backgroundColor:k===lang?colors.iris:'transparent'}}/>
+              <T f="sansMed" size={13}>{L[k].name}</T>
+            </Pressable>))}
+        </View>
+      ) : null}
     </View>
   );
 }
