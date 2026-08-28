@@ -16,7 +16,10 @@ export function T({children, f='sans', c, size=13, style, align, numberOfLines, 
   /* Android picks paragraph direction from the first strong character, so a
      Hebrew line that starts with a Latin word ("safesub …") would lay out LTR.
      An invisible directional mark pins the paragraph to the UI direction. */
-  const mark = dir.rtl ? '\u200F' : '\u200E';
+  const first = typeof children==='string' ? children : (Array.isArray(children) && typeof children[0]==='string' ? children[0] : '');
+  const strong = /[A-Za-z\u0590-\u05FF]/.exec(first)?.[0] || '';
+  const opposite = strong && (dir.rtl ? /[A-Za-z]/.test(strong) : /[\u0590-\u05FF]/.test(strong));
+  const mark = opposite ? (dir.rtl ? '\u200F' : '\u200E') : '';
   return <Text testID={testID} numberOfLines={numberOfLines} style={[{fontFamily:F[f], color:c||colors.bone, fontSize:size, textAlign:align||dir.textAlign, writingDirection:dir.rtl?'rtl':'ltr'}, style]}>{mark}{children}</Text>;
 }
 

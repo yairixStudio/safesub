@@ -1,5 +1,5 @@
 import React, {useMemo, useState} from 'react';
-import {Pressable, ScrollView, TextInput, View} from 'react-native';
+import {Keyboard, Pressable, ScrollView, TextInput, View} from 'react-native';
 import {useApp} from '../state/AppContext';
 import {searchText} from '../i18n';
 import {TINT, alpha} from '../theme/tokens';
@@ -24,10 +24,12 @@ export function SubstancesPane({onLog, onCtx, searchRef}:{onLog:(id:string)=>voi
     return h;
   },[v, subs, tr]);
 
+  /* the keyboard must go away with the results, otherwise the next tap on the
+     grid only dismisses it and the tile never fires */
   function add(id:string){
-    app.addToList(id); setQ(''); setFresh(id); setTimeout(()=>setFresh(f=>f===id?null:f),700);
+    app.addToList(id); setQ(''); Keyboard.dismiss(); searchRef.current?.blur(); setFresh(id); setTimeout(()=>setFresh(f=>f===id?null:f),700);
   }
-  function addCustom(){ const s=app.addCustom(v); setQ(''); setFresh(s.id); setTimeout(()=>setFresh(null),700); }
+  function addCustom(){ const s=app.addCustom(v); setQ(''); Keyboard.dismiss(); searchRef.current?.blur(); setFresh(s.id); setTimeout(()=>setFresh(null),700); }
 
   const mine = my.map(byId).filter(Boolean) as Sub[];
   const rows: (Sub|'add')[][] = [];
@@ -73,7 +75,7 @@ export function SubstancesPane({onLog, onCtx, searchRef}:{onLog:(id:string)=>voi
           )}
         </ScrollView>
       ) : (
-        <ScrollView testID="grid" contentContainerStyle={{paddingBottom:14}}>
+        <ScrollView testID="grid" keyboardShouldPersistTaps="handled" contentContainerStyle={{paddingBottom:14}}>
           <View style={{padding:1}}>
             {rows.map((r,i)=>(
               <View key={i} style={{flexDirection:dir.row}}>

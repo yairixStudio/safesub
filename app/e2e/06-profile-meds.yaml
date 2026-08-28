@@ -19,8 +19,12 @@ appId: studio.yairix.safesub
 - tapOn:
     id: "p-meds"
 - inputText: "ליתיום"
-- hideKeyboard
+# tapping a plain label dismisses the keyboard without pressing BACK
+- tapOn: "מין"
 - takeScreenshot: 06-profile
+- scrollUntilVisible:
+    element:
+      id: "p-save"
 - tapOn:
     id: "p-save"
 - assertNotVisible:
