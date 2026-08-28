@@ -83,13 +83,14 @@ export function Onboarding(){
         <View style={{flexDirection:'row', alignItems:'baseline'}}>
           <T f="sansSemi" size={20} style={{letterSpacing:-.3}}>safe</T><T f="sansLight" size={20} c={colors.iris} style={{letterSpacing:-.3}}>sub</T>
         </View>
-        <View>
+        {/* full-width wrapper so the menu can be centred under the button with absolute coordinates */}
+        <View style={{alignSelf:'stretch', alignItems:'center'}}>
           <Pressable testID="onb-lang" onPress={()=>setDd(v=>!v)} accessibilityRole="button" style={{flexDirection:'row', alignItems:'center', gap:5, paddingVertical:4, paddingHorizontal:8, borderRadius:3, borderWidth:1, borderColor:dd?colors.lineHard:'transparent'}}>
             <T f="mono" size={10.5} c={dd?colors.haze:colors.dust} style={{letterSpacing:.3}}>{L[lang].name}</T>
             <Icon k="chevD" size={9} color={dd?colors.haze:colors.dust} strokeWidth={2}/>
           </Pressable>
           {dd ? (
-            <View testID="onb-lang-menu" style={{position:'absolute', top:'100%', left:'50%', marginTop:4, marginLeft:-75, width:150, backgroundColor:colors.slate2, borderWidth:1, borderColor:colors.lineHard, borderRadius:3, overflow:'hidden', elevation:8, shadowColor:'#000', shadowOpacity:.4, shadowRadius:16, shadowOffset:{width:0,height:10}}}>
+            <View testID="onb-lang-menu" style={{position:'absolute', top:'100%', alignSelf:'center', marginTop:4, width:150, backgroundColor:colors.slate2, borderWidth:1, borderColor:colors.lineHard, borderRadius:3, overflow:'hidden', elevation:8, shadowColor:'#000', shadowOpacity:.4, shadowRadius:16, shadowOffset:{width:0,height:10}}}>
               {(Object.keys(L) as Lang[]).map((k,i)=>(
                 <Pressable key={k} testID={`onb-lang-${k}`} onPress={()=>{ setDd(false); app.setLang(k); }} style={({pressed})=>({flexDirection:dir.row, alignItems:'center', gap:8, paddingVertical:10, paddingHorizontal:13, borderBottomWidth:i<Object.keys(L).length-1?1:0, borderBottomColor:colors.line, backgroundColor:pressed?colors.slate3:'transparent'})}>
                   <View style={{width:5, height:5, borderRadius:3, backgroundColor:k===lang?colors.iris:'transparent'}}/>
