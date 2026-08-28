@@ -1,0 +1,32 @@
+# macOS
+.DS_Store
+
+# node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# expo / react native
+.expo/
+.expo-shared/
+dist/
+web-build/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+app/android/app/build/
+app/android/build/
+app/android/.gradle/
+app/android/local.properties
+app/android/.idea/
+app/android/*.iml
+app/android/app/*.iml
+app/ios/build/
+app/ios/Pods/
+
+# test artefacts
+test-artifacts/
+*.log
