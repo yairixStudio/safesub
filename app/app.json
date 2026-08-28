@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "safesub",
+    "slug": "safesub",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#0A0D11",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "studio.yairix.safesub"
+    },
+    "android": {
+      "package": "studio.yairix.safesub",
+      "adaptiveIcon": {
+        "backgroundColor": "#0A0D11",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "softwareKeyboardLayoutMode": "pan",
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-font"
+    ]
+  }
+}
