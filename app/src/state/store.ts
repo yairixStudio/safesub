@@ -4,6 +4,8 @@
    ========================================================================= */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type {Entry, Profile, Settings, Sub} from '../engine/types';
+import {EMPTY_PROFILE, DEFAULT_SETTINGS} from '../engine/types';
+export {EMPTY_PROFILE, DEFAULT_SETTINGS};
 
 export const STORE_KEY = 'safesub.v1';
 
@@ -16,9 +18,6 @@ export interface Persisted {
   log: Entry[];
 }
 
-export const EMPTY_PROFILE: Profile = {name:'', age:null, weight:null, height:null, sex:null, meds:''};
-/* defaults: Hebrew, dark (product decision 2026-08-28) — both switchable in Settings */
-export const DEFAULT_SETTINGS: Settings = {lang:'he', theme:'dark', onb:false};
 
 export async function restore(): Promise<Persisted | null> {
   try{

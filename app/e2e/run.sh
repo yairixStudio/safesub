@@ -4,7 +4,9 @@
 set -u
 cd "$(dirname "$0")"
 OUT="../../test-artifacts/e2e/$(date +%Y%m%d-%H%M%S)"; mkdir -p "$OUT"
-export PATH="$HOME/.maestro/bin:$PATH"
+export JAVA_HOME="${JAVA_HOME:-/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home}"
+export ANDROID_HOME="${ANDROID_HOME:-/opt/homebrew/share/android-commandlinetools}"
+export PATH="$HOME/.maestro/bin:$JAVA_HOME/bin:$ANDROID_HOME/platform-tools:$PATH"
 pass=0; fail=0; failed=()
 for f in [0-9]*.yaml; do
   echo "=== $f"

@@ -54,3 +54,7 @@ export interface Settings {
 }
 
 export const SEVRANK: Record<Sev, number> = {danger:3, unsafe:2, caution:1};
+
+export const EMPTY_PROFILE: Profile = {name:'', age:null, weight:null, height:null, sex:null, meds:''};
+/* defaults: Hebrew, dark (product decision 2026-08-28) — both switchable in Settings */
+export const DEFAULT_SETTINGS: Settings = {lang:'he', theme:'dark', onb:false};
