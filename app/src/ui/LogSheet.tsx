@@ -36,7 +36,8 @@ export function LogSheet({entryKey, mode, onClose, onAskAi}:{entryKey:string|nul
     if(mode!=='new') return;
     deadline.current = Date.now()+WINDOW_MS; setSecs(15);
     bar.stopAnimation(); bar.setValue(1);
-    Animated.timing(bar,{toValue:0,duration:WINDOW_MS,useNativeDriver:false}).start();
+    /* native-driven scale: no per-frame layout, so the accessibility tree stays idle */
+    Animated.timing(bar,{toValue:0,duration:WINDOW_MS,useNativeDriver:true}).start();
   }
   useEffect(()=>{
     if(!open){ if(timer.current){ clearInterval(timer.current); timer.current=null; } return; }
@@ -69,7 +70,7 @@ export function LogSheet({entryKey, mode, onClose, onAskAi}:{entryKey:string|nul
     <>
       <Pressable testID="scrim" onPress={onClose} style={[StyleSheet.absoluteFill,{backgroundColor:colors.scrim}]}/>
       <Animated.View testID="log-sheet" onTouchStart={reset} style={[st.sheet,{backgroundColor:colors.slate2, borderTopColor:colors.lineHard, maxHeight:height*.92, paddingBottom:insets.bottom, transform:[{translateY:y.interpolate({inputRange:[0,1],outputRange:[0,height]})}]}]}>
-        {mode==='new' ? <View style={{height:2, backgroundColor:colors.lineHard, marginHorizontal:-16}}><Animated.View style={{height:2, backgroundColor:colors.ember, width:bar.interpolate({inputRange:[0,1],outputRange:['0%','100%']}), alignSelf:dir.rtl?'flex-end':'flex-start'}}/></View> : null}
+        {mode==='new' ? <View style={{height:2, backgroundColor:colors.lineHard, marginHorizontal:-16}}><Animated.View style={{height:2, backgroundColor:colors.ember, width:'100%', transformOrigin:dir.rtl?'right center':'left center', transform:[{scaleX:bar}]}}/></View> : null}
         <ScrollView keyboardShouldPersistTaps="handled" bounces={false}>
           <Row gap={10} style={{paddingTop:12, paddingBottom:10}}>
             <View style={{width:34, height:34, borderRadius:2, alignItems:'center', justifyContent:'center', backgroundColor:alpha(tint,.13), borderWidth:1, borderColor:alpha(tint,.22)}}><Icon k={s.i} size={19} color={tint} strokeWidth={1.7}/></View>
