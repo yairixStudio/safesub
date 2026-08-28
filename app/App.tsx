@@ -1,5 +1,5 @@
-import React, {useRef, useState} from 'react';
-import {Pressable, TextInput, View} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {BackHandler, Pressable, TextInput, View} from 'react-native';
 import {StatusBar} from 'expo-status-bar';
 import {useFonts} from 'expo-font';
 import {IBMPlexSansHebrew_300Light, IBMPlexSansHebrew_400Regular, IBMPlexSansHebrew_500Medium, IBMPlexSansHebrew_600SemiBold, IBMPlexSansHebrew_700Bold} from '@expo-google-fonts/ibm-plex-sans-hebrew';
@@ -53,6 +53,20 @@ function Root(){
   const searchRef = useRef<TextInput>(null);
   const phys = (logical:number) => dir.rtl ? PANES-1-logical : logical;
   const goto = (p:number) => { setPage(p); pager.current?.setPage(phys(p)); };
+
+  /* Android back: close the topmost overlay first, then return to the
+     substances pane, and only then let the system handle it */
+  const backRef = useRef<()=>boolean>(()=>false);
+  backRef.current = () => {
+    if(ctx){ setCtx(null); return true; }
+    if(sheet){ setSheet(null); return true; }
+    if(learn){ setLearn(null); return true; }
+    if(profileOpen){ setProfileOpen(false); return true; }
+    if(settingsOpen){ setSettingsOpen(false); return true; }
+    if(settings.onb && page!==1){ goto(1); return true; }
+    return false;
+  };
+  useEffect(()=>{ const sub=BackHandler.addEventListener('hardwareBackPress', ()=>backRef.current()); return ()=>sub.remove(); },[]);
 
   if(!ready) return <View style={{flex:1, backgroundColor:colors.ink}}/>;
 
