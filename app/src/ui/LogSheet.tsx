@@ -49,10 +49,12 @@ export function LogSheet({entryKey, mode, onClose, onAskAi}:{entryKey:string|nul
 
   const tint=TINT[s.c];
   /* highest-severity interaction among active windows + standing meds */
-  let best:{sev:Sev; title:string; txt:string; meta:string}|null=null;
+  type Flag={sev:Sev; title:string; txt:string; meta:string};
+  const cands:Flag[]=[];
   eng.activeIds().forEach(other=>{ if(other===s.id) return; const r=riskFor(s.id,other,byId);
-    if(r && (!best||SEVRANK[r.sev]>SEVRANK[best.sev])) best={sev:r.sev, title:`${tr.sn(s)} + ${tr.sn(byId(other)!)}`, txt:tr.rtxt(r.k), meta:tr.t('pop.winOpen',tr.sn(byId(other)!),tr.rem(eng.windowLeft(other)))}; });
-  medHits(profile.meds, s.c).forEach(f=>{ if(!best||SEVRANK[f.sev]>SEVRANK[best.sev]) best={sev:f.sev, title:tr.t('pop.medTitle',tr.sn(s)), txt:tr.rtxt(f.k), meta:tr.t('pop.fromProfile')}; });
+    if(r) cands.push({sev:r.sev, title:`${tr.sn(s)} + ${tr.sn(byId(other)!)}`, txt:tr.rtxt(r.k), meta:tr.t('pop.winOpen',tr.sn(byId(other)!),tr.rem(eng.windowLeft(other)))}); });
+  medHits(profile.meds, s.c).forEach(f=>cands.push({sev:f.sev, title:tr.t('pop.medTitle',tr.sn(s)), txt:tr.rtxt(f.k), meta:tr.t('pop.fromProfile')}));
+  const best:Flag|null = cands.reduce<Flag|null>((b,c)=>(!b||SEVRANK[c.sev]>SEVRANK[b.sev])?c:b, null);
   const tips:string[]=tr.stips(s);
   const step=s.step||1;
   const flagColor = best ? (best.sev==='caution'?colors.ember:colors.clay) : colors.ember;
