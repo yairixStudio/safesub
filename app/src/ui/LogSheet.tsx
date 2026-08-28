@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Animated, Pressable, ScrollView, StyleSheet, TextInput, View, useWindowDimensions} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useApp} from '../state/AppContext';
 import {riskFor} from '../engine/interactions';
 import {medHits} from '../engine/interactions';
@@ -7,7 +8,7 @@ import {SEVRANK} from '../engine/types';
 import type {Sev} from '../engine/types';
 import {TINT, alpha} from '../theme/tokens';
 import {Icon} from './Icon';
-import {T, Row, Chip, Btn} from './common';
+import {T, Row, Chip, Btn, HScroll} from './common';
 
 const WINDOW_MS = 15000;
 const hhmm = (ms:number) => { const d=new Date(ms); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); };
@@ -17,6 +18,7 @@ const hhmm = (ms:number) => { const d=new Date(ms); return String(d.getHours()).
 export function LogSheet({entryKey, mode, onClose, onAskAi}:{entryKey:string|null; mode:'new'|'edit'; onClose:()=>void; onAskAi:(name:string)=>void}){
   const app = useApp(); const {colors, dir, tr, eng, byId, profile} = app;
   const {height} = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const e = app.log.find(x=>x.key===entryKey) || null;
   const s = e ? byId(e.id) : undefined;
   const open = !!e && !!s;
@@ -66,7 +68,7 @@ export function LogSheet({entryKey, mode, onClose, onAskAi}:{entryKey:string|nul
   return (
     <>
       <Pressable testID="scrim" onPress={onClose} style={[StyleSheet.absoluteFill,{backgroundColor:colors.scrim}]}/>
-      <Animated.View testID="log-sheet" onTouchStart={reset} style={[st.sheet,{backgroundColor:colors.slate2, borderTopColor:colors.lineHard, maxHeight:height*.92, transform:[{translateY:y.interpolate({inputRange:[0,1],outputRange:[0,height]})}]}]}>
+      <Animated.View testID="log-sheet" onTouchStart={reset} style={[st.sheet,{backgroundColor:colors.slate2, borderTopColor:colors.lineHard, maxHeight:height*.92, paddingBottom:insets.bottom, transform:[{translateY:y.interpolate({inputRange:[0,1],outputRange:[0,height]})}]}]}>
         {mode==='new' ? <View style={{height:2, backgroundColor:colors.lineHard, marginHorizontal:-16}}><Animated.View style={{height:2, backgroundColor:colors.ember, width:bar.interpolate({inputRange:[0,1],outputRange:['0%','100%']}), alignSelf:dir.rtl?'flex-end':'flex-start'}}/></View> : null}
         <ScrollView keyboardShouldPersistTaps="handled" bounces={false}>
           <Row gap={10} style={{paddingTop:12, paddingBottom:10}}>
@@ -97,9 +99,9 @@ export function LogSheet({entryKey, mode, onClose, onAskAi}:{entryKey:string|nul
 
           <T f="mono" size={9.5} c={colors.dust} style={{letterSpacing:.5, marginBottom:5}}>{tr.t('pop.when')}</T>
           <Row gap={7} style={{marginBottom:10}}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{flex:1}} contentContainerStyle={{gap:6, flexDirection:dir.row}}>
+            <HScroll style={{flex:1}}>
               {([0,5,15,30,60] as const).map(m=><Chip key={m} testID={`when-${m}`} label={tr.t('pop.w'+m)} on={whenSel===m} onPress={()=>setWhen(m)}/>)}
-            </ScrollView>
+            </HScroll>
             <TextInput testID="when-time" value={timeTxt} onChangeText={setTimeTxt} onBlur={()=>applyTime(timeTxt)} onSubmitEditing={()=>applyTime(timeTxt)} placeholder="--:--" placeholderTextColor={colors.dust} keyboardType="numbers-and-punctuation" maxLength={5}
               style={{width:84, height:33, borderRadius:3, backgroundColor:colors.slate1, borderWidth:1, borderColor:whenSel==='time'?alpha(colors.iris,.5):colors.lineHard, color:whenSel==='time'?colors.iris:colors.haze, fontFamily:'IBMPlexMono_400Regular', fontSize:12, paddingVertical:0, paddingHorizontal:8, textAlign:'center'}}/>
           </Row>
@@ -118,9 +120,9 @@ export function LogSheet({entryKey, mode, onClose, onAskAi}:{entryKey:string|nul
             {s.s.length ? (
               <View style={{flex:1, minWidth:0}}>
                 <T f="mono" size={9.5} c={colors.dust} style={{letterSpacing:.5, marginBottom:5}}>{tr.t('pop.sub')}</T>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap:6, flexDirection:dir.row}}>
+                <HScroll>
                   {s.s.map(k=><Chip key={k} testID={`sub-${k}`} label={tr.subLabel(s,k)} on={e.sub===k} onPress={()=>{ app.updateEntry(e.key,{sub:e.sub===k?null:k}); reset(); }}/>)}
-                </ScrollView>
+                </HScroll>
               </View>
             ) : null}
           </Row>

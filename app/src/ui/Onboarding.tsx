@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import Svg, {Path, Rect, Circle, Line, Text as SvgText} from 'react-native-svg';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useApp} from '../state/AppContext';
 import {L} from '../i18n';
 import type {Lang} from '../engine/types';
@@ -73,11 +74,12 @@ export function Onboarding(){
   const app = useApp(); const {colors, dir, tr, lang} = app;
   const [step, setStep] = useState(0);
   const [dd, setDd] = useState(false);
+  const insets = useSafeAreaInsets();
   const steps = tr.t('onb.steps') as {label:string; skip:boolean; title:string; body:string}[];
   const s = steps[step];
   return (
-    <View testID="onboarding" style={[StyleSheet.absoluteFill,{backgroundColor:colors.ink, zIndex:40, elevation:40}]}>
-      <View style={{alignItems:'center', paddingTop:40, gap:2, zIndex:2}}>
+    <View testID="onboarding" style={[StyleSheet.absoluteFill,{backgroundColor:colors.ink, zIndex:40, elevation:40, paddingTop:insets.top, paddingBottom:insets.bottom}]}>
+      <View style={{alignItems:'center', paddingTop:16, gap:2, zIndex:2}}>
         <View style={{flexDirection:'row', alignItems:'baseline'}}>
           <T f="sansSemi" size={20} style={{letterSpacing:-.3}}>safe</T><T f="sansLight" size={20} c={colors.iris} style={{letterSpacing:-.3}}>sub</T>
         </View>

@@ -6,7 +6,7 @@ import {useApp} from '../state/AppContext';
 import {riskFor} from '../engine/interactions';
 import {r1} from '../engine/pk';
 import {TINT, alpha} from '../theme/tokens';
-import {T} from './common';
+import {T, HScroll} from './common';
 
 /* Intensity chart — port of renderChartSvg. Pan = scroll time, pinch = zoom.
    The x axis always runs left→right, whatever the UI language. */
@@ -85,6 +85,7 @@ export function Chart({onLock}:{onLock?:(locked:boolean)=>void}){
       const m0=d0.getHours()*60+d0.getMinutes(); d0.setMinutes(d0.getMinutes()+(tick-(m0%tick))%tick);
       for(let dt=new Date(d0), i=0; i<200; dt=new Date(dt.getTime()+tick*60000), i++){
         const t=(dt.getTime()-nowMs)/60000; if(t>VT1) break; if(t<VT0) continue; if(Math.abs(t)<tick*.4) continue;
+        if(x(t)<18||x(t)>W-18) continue;
         const lbl=String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');
         els.push(<SvgText key={'tk'+i} x={x(t)} y={H-7} fill={colors.dust} fontSize={9} fontFamily="IBMPlexMono_400Regular" textAnchor="middle">{lbl}</SvgText>);
       }
@@ -100,14 +101,14 @@ export function Chart({onLock}:{onLock?:(locked:boolean)=>void}){
         </View>
       </GestureDetector>
       {ids.length ? (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap:5, paddingVertical:7, flexDirection:dir.row}}>
+        <HScroll gap={5} contentStyle={{paddingVertical:7}}>
           {(['all',...ids] as string[]).map(id=>{ const on=curveSel===id; const tint=id==='all'?'#B9C4CF':TINT[byId(id)!.c]; return (
             <Pressable key={id} testID={`ctag-${id}`} onPress={()=>setSel(id)} style={{flexDirection:dir.row, alignItems:'center', gap:5, paddingVertical:3, paddingHorizontal:8, borderRadius:3, borderWidth:1,
               backgroundColor:on?alpha(tint,.12):colors.slate1, borderColor:on?alpha(tint,.55):colors.lineHard}}>
               <View style={{width:6, height:6, borderRadius:1, backgroundColor:tint}}/>
               <T f="sansMed" size={11} c={on?colors.bone:colors.haze}>{id==='all'?tr.t('intensity.all'):tr.sn(byId(id)!)}</T>
             </Pressable>); })}
-        </ScrollView>
+        </HScroll>
       ) : null}
     </View>
   );

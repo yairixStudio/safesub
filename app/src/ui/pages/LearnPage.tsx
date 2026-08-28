@@ -5,7 +5,7 @@ import {explicitRisksOf, riskFor} from '../../engine/interactions';
 import {SEVRANK, type Sev} from '../../engine/types';
 import {TINT, alpha, mix} from '../../theme/tokens';
 import {Icon} from '../Icon';
-import {T, Row, Page, SecHead} from '../common';
+import {T, Row, Page, SecHead, HScroll} from '../common';
 import {ResourceList} from './SettingsPage';
 
 export function LearnPage({id, onClose}:{id:string|null; onClose:()=>void}){
@@ -81,7 +81,7 @@ export function LearnPage({id, onClose}:{id:string|null; onClose:()=>void}){
           </Row>))}
         </View>
         <View style={{marginBottom:16}}><SecHead title={tr.t('page.videos')} count={vids.length}/>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap:7, flexDirection:dir.row}}>
+          <HScroll gap={7}>
             {vids.map((v,i)=>(<View key={i} style={{width:150}}>
               <View style={{height:86, borderRadius:2, borderWidth:1, borderColor:colors.lineHard, backgroundColor:mix(tint, colors.slate1, .16), alignItems:'center', justifyContent:'center'}}>
                 <View style={{width:30, height:30, borderRadius:3, backgroundColor:'rgba(10,13,17,.72)', borderWidth:1, borderColor:colors.lineHard, alignItems:'center', justifyContent:'center'}}><Icon k="play" size={13} color="#E7ECF2" fill="#E7ECF2"/></View>
@@ -89,7 +89,7 @@ export function LearnPage({id, onClose}:{id:string|null; onClose:()=>void}){
               </View>
               <T f="sansMed" size={12} style={{lineHeight:16, marginTop:6}}>{v.t}</T><T f="mono" size={9} c={colors.dust} style={{marginTop:2}}>safesub</T>
             </View>))}
-          </ScrollView></View>
+          </HScroll></View>
         <View style={{marginBottom:16}}><SecHead title={tr.t('page.links')}/>
           {links.map(l=>(<Pressable key={l.d} onPress={()=>Linking.openURL(l.href).catch(()=>{})} style={({pressed})=>({flexDirection:dir.row, alignItems:'center', gap:10, paddingVertical:10, paddingHorizontal:12, backgroundColor:pressed?colors.slate2:colors.slate1, borderWidth:1, borderColor:colors.line, borderRadius:2, marginBottom:6})}>
             <View style={{backgroundColor:alpha(tint,.1), paddingVertical:3, paddingHorizontal:7, borderRadius:2}}><T f="mono" size={9.5} c={tint}>{l.d}</T></View>

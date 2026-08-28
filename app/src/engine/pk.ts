@@ -115,7 +115,7 @@ export function makeEngine(log: Entry[], now: number, byId: (id:string)=>Sub|und
   /* doses still inside the model window */
   function inWindowCount(id:string): number {
     const a=prepped(id); let n=0;
-    for(let i=0;i<a.length;i++){ const p=a[i]; if(p.ageNow>0 && p.ageNow<p.end) n++; }
+    for(let i=0;i<a.length;i++){ const p=a[i]; if(p.ageNow>=0 && p.ageNow<p.end) n++; }
     return n;
   }
   /* windowLeft() opens only once the level crosses .06 — the rising phase counts too */
@@ -127,7 +127,7 @@ export function makeEngine(log: Entry[], now: number, byId: (id:string)=>Sub|und
   }
   function earliestActive(id:string): number {
     const a=prepped(id); let t0=0;
-    for(let i=0;i<a.length;i++){ const p=a[i]; if(p.ageNow>0 && p.ageNow<p.end && -p.ageNow<t0) t0=-p.ageNow; }
+    for(let i=0;i<a.length;i++){ const p=a[i]; if(p.ageNow>=0 && p.ageNow<p.end && -p.ageNow<t0) t0=-p.ageNow; }
     return t0;
   }
   /* whole curve from the earliest still-active dose to the window close, in a 100×100 box */

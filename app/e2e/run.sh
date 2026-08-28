@@ -7,6 +7,11 @@ OUT="../../test-artifacts/e2e/$(date +%Y%m%d-%H%M%S)"; mkdir -p "$OUT"
 export JAVA_HOME="${JAVA_HOME:-/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home}"
 export ANDROID_HOME="${ANDROID_HOME:-/opt/homebrew/share/android-commandlinetools}"
 export PATH="$HOME/.maestro/bin:$JAVA_HOME/bin:$ANDROID_HOME/platform-tools:$PATH"
+# Maestro's analytics init shells out to `flutter --version` and blocks on it if a
+# Homebrew flutter wrapper is present — keep flutter's directory off its PATH.
+FL="$(dirname "$(command -v flutter 2>/dev/null || echo /nonexistent/flutter)")"
+export PATH="$(echo "$PATH" | tr ':' '\n' | grep -vx "$FL" | paste -sd: -)"
+export MAESTRO_CLI_NO_ANALYTICS=1 MAESTRO_DISABLE_UPDATE_CHECK=true
 pass=0; fail=0; failed=()
 for f in [0-9]*.yaml; do
   echo "=== $f"

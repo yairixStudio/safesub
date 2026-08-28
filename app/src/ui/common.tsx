@@ -1,7 +1,8 @@
 /* Shared building blocks: direction-aware text and rows, chips, segmented
    control, buttons, and the full-page shell with a back button. */
 import React, {useEffect, useRef} from 'react';
-import {Animated, Pressable, StyleSheet, Text, View, useWindowDimensions, type StyleProp, type TextStyle, type ViewStyle} from 'react-native';
+import {Animated, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type StyleProp, type TextStyle, type ViewStyle} from 'react-native';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useApp} from '../state/AppContext';
 import {F, alpha} from '../theme/tokens';
 import {Icon} from './Icon';
@@ -12,7 +13,11 @@ export function T({children, f='sans', c, size=13, style, align, numberOfLines, 
   align?:'left'|'right'|'center'; numberOfLines?:number; testID?:string;
 }){
   const {colors, dir} = useApp();
-  return <Text testID={testID} numberOfLines={numberOfLines} style={[{fontFamily:F[f], color:c||colors.bone, fontSize:size, textAlign:align||dir.textAlign, writingDirection:dir.rtl?'rtl':'ltr'}, style]}>{children}</Text>;
+  /* Android picks paragraph direction from the first strong character, so a
+     Hebrew line that starts with a Latin word ("safesub …") would lay out LTR.
+     An invisible directional mark pins the paragraph to the UI direction. */
+  const mark = dir.rtl ? '\u200F' : '\u200E';
+  return <Text testID={testID} numberOfLines={numberOfLines} style={[{fontFamily:F[f], color:c||colors.bone, fontSize:size, textAlign:align||dir.textAlign, writingDirection:dir.rtl?'rtl':'ltr'}, style]}>{mark}{children}</Text>;
 }
 
 /* a row laid out in reading direction */
@@ -60,6 +65,22 @@ export function Btn({label, kind='primary', onPress, style, testID, icon}:{label
   );
 }
 
+/* horizontal chip row that reads in UI direction: in RTL the first item sits at
+   the right edge and the row starts scrolled to that end */
+export function HScroll({children, gap=6, style, contentStyle}:{children:React.ReactNode; gap?:number; style?:StyleProp<ViewStyle>; contentStyle?:StyleProp<ViewStyle>}){
+  const {dir} = useApp();
+  const ref = useRef<ScrollView>(null);
+  const items = React.Children.toArray(children);
+  const ordered = dir.rtl ? [...items].reverse() : items;
+  return (
+    <ScrollView ref={ref} horizontal showsHorizontalScrollIndicator={false} style={style}
+      contentContainerStyle={[{flexDirection:'row', gap, flexGrow:1, justifyContent:dir.rtl?'flex-end':'flex-start'}, contentStyle]}
+      onContentSizeChange={()=>{ if(dir.rtl) ref.current?.scrollToEnd({animated:false}); }}>
+      {ordered}
+    </ScrollView>
+  );
+}
+
 /* the section heading used on pages */
 export function SecHead({title, count}:{title:string; count?:number|string}){
   const {colors} = useApp();
@@ -77,6 +98,7 @@ export function Page({open, onClose, title, right, children, testID, headerExtra
 }){
   const {colors, dir, tr} = useApp();
   const {width} = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const x = useRef(new Animated.Value(open?0:1)).current;
   const [mounted, setMounted] = React.useState(open);
   useEffect(()=>{
@@ -86,7 +108,7 @@ export function Page({open, onClose, title, right, children, testID, headerExtra
   if(!mounted) return null;
   const from = dir.rtl ? -width : width;   /* inline-end edge */
   return (
-    <Animated.View testID={testID} style={[StyleSheet.absoluteFill, {backgroundColor:colors.ink, transform:[{translateX:x.interpolate({inputRange:[0,1], outputRange:[0,from]})}]}]}>
+    <Animated.View testID={testID} style={[StyleSheet.absoluteFill, {paddingTop:insets.top, paddingBottom:insets.bottom, backgroundColor:colors.ink, transform:[{translateX:x.interpolate({inputRange:[0,1], outputRange:[0,from]})}]}]}>
       <Row gap={10} style={{paddingHorizontal:16, paddingTop:10, paddingBottom:12, borderBottomWidth:1, borderBottomColor:colors.line}}>
         <Pressable testID={testID?`${testID}-back`:undefined} onPress={onClose} accessibilityRole="button" accessibilityLabel={tr.t('common.back')}
           style={{width:32, height:32, borderRadius:3, borderWidth:1, borderColor:colors.lineHard, alignItems:'center', justifyContent:'center', transform:[{scaleX:dir.rtl?1:-1}]}}>

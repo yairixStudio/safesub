@@ -3,7 +3,7 @@ import {Pressable, ScrollView, View} from 'react-native';
 import {useApp} from '../state/AppContext';
 import {TINT, alpha} from '../theme/tokens';
 import {Icon} from './Icon';
-import {T, Row} from './common';
+import {T, Row, HScroll} from './common';
 
 const hhmm = (ms:number) => { const d=new Date(ms); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); };
 
@@ -25,14 +25,14 @@ export function JournalPane({onEdit}:{onEdit:(key:string)=>void}){
         <T f="mono" size={9} c={colors.dust} testID="log-cap">{String(cap).replace(/<\/?b>/g,'')}</T>
       </Row>
       {log.length ? (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{flexGrow:0}} contentContainerStyle={{gap:5, paddingTop:2, paddingBottom:7, flexDirection:dir.row}}>
+        <HScroll gap={5} style={{flexGrow:0}} contentStyle={{paddingTop:2, paddingBottom:7}}>
           {(['all',...loggedIds]).map(id=>{ const on=f===id; const tint=id==='all'?'#B9C4CF':TINT[byId(id)?.c||'oth']; const n=id==='all'?log.length:counts[id]; return (
             <Pressable key={id} testID={`ltag-${id}`} onPress={()=>setFilter(id)} style={{flexDirection:dir.row, alignItems:'center', gap:5, paddingVertical:3, paddingHorizontal:8, borderRadius:3, borderWidth:1, backgroundColor:on?alpha(tint,.12):colors.slate1, borderColor:on?alpha(tint,.55):colors.lineHard}}>
               <View style={{width:6, height:6, borderRadius:1, backgroundColor:tint}}/>
               <T f="sansMed" size={11} c={on?colors.bone:colors.haze}>{id==='all'?tr.t('log.all'):tr.sn(byId(id)!)}</T>
               <T f="monoMed" size={9} c={colors.dust}>{String(n)}</T>
             </Pressable>); })}
-        </ScrollView>
+        </HScroll>
       ) : null}
       <ScrollView testID="loglist" contentContainerStyle={{paddingBottom:16}}>
         {!log.length ? (

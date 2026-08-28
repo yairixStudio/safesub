@@ -17,7 +17,7 @@ export function CtxMenu({ctx, onClose, onLog, onAsk, onLearn, onRemove}:{ctx:Ctx
   const s=byId(ctx.id); if(!s) return null;
   const others=eng.activeIds().filter(x=>x!==ctx.id);
   const cw=200, ch=184;
-  const left=Math.max(8,Math.min(width-cw-8, ctx.x-cw/2)), top=Math.max(8,Math.min(height-insets.top-insets.bottom-ch-8, ctx.y-insets.top+10));
+  const left=Math.max(8,Math.min(width-cw-8, ctx.x-cw/2)), top=Math.max(insets.top+8,Math.min(height-insets.bottom-ch-8, ctx.y+10));
   const tint=TINT[s.c];
   const Item=({act, icon, label, small, hot, dim, testID}:{act:()=>void; icon:string; label:string; small?:string; hot?:boolean; dim?:boolean; testID:string})=>(
     <Pressable testID={testID} onPress={()=>{ onClose(); act(); }} accessibilityRole="button" style={({pressed})=>({backgroundColor:pressed?colors.slate3:'transparent', borderBottomWidth:1, borderBottomColor:colors.line})}>
