@@ -27,6 +27,9 @@ appId: studio.yairix.safesub
     id: "sheet-flag"
 - assertVisible: "מסוכן.*"
 - takeScreenshot: 03-danger-flag
+# a dose logged this second is still below the activity threshold — 5 min back makes it active
+- tapOn:
+    id: "when-5"
 - tapOn:
     id: "sheet-save"
 - tapOn:

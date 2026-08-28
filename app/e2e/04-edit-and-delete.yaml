@@ -16,7 +16,9 @@ appId: studio.yairix.safesub
 - tapOn:
     id: "nav-log"
 - assertVisible: "קפה"
-- tapOn: "קפה"
+- tapOn:
+    text: "קפה"
+    index: 1
 - assertVisible: "עריכת רישום"
 - tapOn:
     id: "when-60"
@@ -24,7 +26,9 @@ appId: studio.yairix.safesub
 - tapOn:
     id: "sheet-save"
 - assertVisible: "לפני שעה"
-- tapOn: "קפה"
+- tapOn:
+    text: "קפה"
+    index: 1
 - tapOn:
     id: "sheet-undo"
 - assertVisible: ".*היומן ריק.*"

@@ -12,6 +12,8 @@ appId: studio.yairix.safesub
 - tapOn:
     id: "tile-can"
 - tapOn:
+    id: "when-15"
+- tapOn:
     id: "sheet-ai"
 - assertVisible:
     id: "chat-input"
