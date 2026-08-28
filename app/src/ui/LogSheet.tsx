@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Animated, Pressable, ScrollView, StyleSheet, TextInput, View, useWindowDimensions} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import Svg, {Rect, Text as SvgText} from 'react-native-svg';
 import {useApp} from '../state/AppContext';
 import {riskFor} from '../engine/interactions';
 import {medHits} from '../engine/interactions';
@@ -11,6 +12,10 @@ import {Icon} from './Icon';
 import {T, Row, Chip, Btn, HScroll} from './common';
 
 const WINDOW_MS = 15000;
+/* The countdown bar and digits are drawn in SVG on purpose: SVG content is not
+   a native View, so the accessibility/UI-automation hierarchy stays static
+   while they animate (a per-second changing view tree stalls UI drivers). */
+const ARect = Animated.createAnimatedComponent(Rect);
 const hhmm = (ms:number) => { const d=new Date(ms); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); };
 
 /* The commit / edit sheet. In "new" mode a 15-second bar counts down and the
@@ -28,6 +33,7 @@ export function LogSheet({entryKey, mode, onClose, onAskAi}:{entryKey:string|nul
   const [whenSel, setWhenSel] = useState<number|'time'>(0);
   const [timeTxt, setTimeTxt] = useState('');
   const deadline = useRef(0);
+  const [barW, setBarW] = useState(0);
   const timer = useRef<ReturnType<typeof setInterval>|null>(null);
 
   useEffect(()=>{ Animated.timing(y,{toValue:open?0:1,duration:open?280:220,useNativeDriver:true}).start(); },[open]);
@@ -36,8 +42,7 @@ export function LogSheet({entryKey, mode, onClose, onAskAi}:{entryKey:string|nul
     if(mode!=='new') return;
     deadline.current = Date.now()+WINDOW_MS; setSecs(15);
     bar.stopAnimation(); bar.setValue(1);
-    /* native-driven scale: no per-frame layout, so the accessibility tree stays idle */
-    Animated.timing(bar,{toValue:0,duration:WINDOW_MS,useNativeDriver:true}).start();
+    Animated.timing(bar,{toValue:0,duration:WINDOW_MS,useNativeDriver:false}).start();
   }
   useEffect(()=>{
     if(!open){ if(timer.current){ clearInterval(timer.current); timer.current=null; } return; }
@@ -70,7 +75,12 @@ export function LogSheet({entryKey, mode, onClose, onAskAi}:{entryKey:string|nul
     <>
       <Pressable testID="scrim" onPress={onClose} style={[StyleSheet.absoluteFill,{backgroundColor:colors.scrim}]}/>
       <Animated.View testID="log-sheet" onTouchStart={reset} style={[st.sheet,{backgroundColor:colors.slate2, borderTopColor:colors.lineHard, maxHeight:height*.92, paddingBottom:insets.bottom, transform:[{translateY:y.interpolate({inputRange:[0,1],outputRange:[0,height]})}]}]}>
-        {mode==='new' ? <View importantForAccessibility="no-hide-descendants" style={{height:2, backgroundColor:colors.lineHard, marginHorizontal:-16}}><Animated.View style={{height:2, backgroundColor:colors.ember, width:'100%', transformOrigin:dir.rtl?'right center':'left center', transform:[{scaleX:bar}]}}/></View> : null}
+        {mode==='new' ? <View style={{height:2, marginHorizontal:-16}} onLayout={e=>setBarW(e.nativeEvent.layout.width)}>
+          {barW ? <Svg width={barW} height={2}>
+            <Rect x={0} y={0} width={barW} height={2} fill={colors.lineHard}/>
+            <ARect y={0} height={2} fill={colors.ember} width={bar.interpolate({inputRange:[0,1],outputRange:[0,barW]})} x={dir.rtl ? bar.interpolate({inputRange:[0,1],outputRange:[barW,0]}) : 0}/>
+          </Svg> : null}
+        </View> : null}
         <ScrollView keyboardShouldPersistTaps="handled" bounces={false}>
           <Row gap={10} style={{paddingTop:12, paddingBottom:10}}>
             <View style={{width:34, height:34, borderRadius:2, alignItems:'center', justifyContent:'center', backgroundColor:alpha(tint,.13), borderWidth:1, borderColor:alpha(tint,.22)}}><Icon k={s.i} size={19} color={tint} strokeWidth={1.7}/></View>
@@ -78,7 +88,7 @@ export function LogSheet({entryKey, mode, onClose, onAskAi}:{entryKey:string|nul
               <Row gap={5}><View style={{width:4, height:4, borderRadius:2, backgroundColor:mode==='new'?colors.ember:colors.haze}}/><T f="mono" size={9.5} c={mode==='new'?colors.ember:colors.haze} style={{letterSpacing:.5}}>{mode==='new'?tr.t('pop.now'):tr.t('pop.edit')}</T></Row>
               <T f="sansSemi" size={16.5} testID="sheet-name" style={{letterSpacing:-.3}}>{tr.sn(s)}</T>
             </View>
-            {mode==='new' ? <T f="monoMed" size={17} c={colors.haze} a11yHidden style={{minWidth:24}} align={dir.end}>{String(secs)}</T> : null}
+            {mode==='new' ? <Svg width={30} height={24}><SvgText x={dir.rtl?0:30} y={19} fill={colors.haze} fontSize={17} fontFamily="IBMPlexMono_500Medium" textAnchor={dir.rtl?'start':'end'}>{String(secs)}</SvgText></Svg> : null}
           </Row>
 
           {best ? (
