@@ -1,5 +1,5 @@
 // @ts-nocheck — pure data file; typed structurally through Dict in ./index.ts
-/* GENERATED from demo-reference.html parts by scratchpad/gen-ts.mjs — edit the demo, not this file. */
+/* GENERATED from demo-reference.html by tools/gen-app-data.mjs — edit the demo, then regenerate. */
 export const he = {
   name:'עברית', dir:'rtl',
   common:{back:'חזרה'},

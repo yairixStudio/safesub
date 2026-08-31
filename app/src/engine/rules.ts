@@ -1,4 +1,4 @@
-/* GENERATED from demo-reference.html parts by scratchpad/gen-ts.mjs — edit the demo, not this file. */
+/* GENERATED from demo-reference.html by tools/gen-app-data.mjs — edit the demo, then regenerate. */
 import type {Cat, Sev} from './types';
 
 /* explicit pairs: [idA, idB, severity, textKey] */

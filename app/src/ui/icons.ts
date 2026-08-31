@@ -1,4 +1,4 @@
-/* GENERATED from demo-reference.html parts by scratchpad/gen-ts.mjs — edit the demo, not this file. */
+/* GENERATED from demo-reference.html by tools/gen-app-data.mjs — edit the demo, then regenerate. */
 export type IconEl = {t:'path';d:string}|{t:'rect';x:number;y:number;w:number;h:number;rx:number}|{t:'circle';cx:number;cy:number;r:number}|{t:'g';transform?:string;el:IconEl[]};
 export const ICONS: Record<string, IconEl[]> = {
   "cig": [{"t":"path","d":"M2 13.5h15v4.5H2z"},{"t":"path","d":"M13 13.5V18"},{"t":"path","d":"M19 5.5c0 2-2 2-2 4s2 2 2 3"}],

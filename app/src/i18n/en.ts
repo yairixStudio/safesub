@@ -1,5 +1,5 @@
 // @ts-nocheck — pure data file; must mirror he.ts key for key (checked by Dict)
-/* GENERATED from demo-reference.html parts by scratchpad/gen-ts.mjs — edit the demo, not this file. */
+/* GENERATED from demo-reference.html by tools/gen-app-data.mjs — edit the demo, then regenerate. */
 export const en = {
   name:'English', dir:'ltr',
   common:{back:'Back'},
@@ -431,3 +431,4 @@ Binding principles:
       tips:['List it in your profile — the engine will warn','Not with psychedelics','Adequate hydration']}
   }
 };
+
