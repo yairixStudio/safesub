@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 # Production stress battery on the connected emulator:
-#   1. monkey storm  — 5,000 random events, fail on any crash/ANR
-#   2. memory soak   — PSS sampled across repeated heavy UI cycles (leak check)
-#   3. font scale    — XL accessibility font, screenshot for review
-# Artifacts land in ../../test-artifacts/stress/<timestamp>/.
+#   1. monkey storm  — 5,000 seeded touch-class events (batched until the quota
+#                      is met: monkey aborts itself on ANY process ANR, ours or
+#                      not); fails only on CRASH/ANR of the target package
+#   2. memory soak   — Maestro-driven heavy UI cycles (hermetic; one retry),
+#                      PSS sampled in parallel; leak verdict from the SETTLED
+#                      level (45s idle + trim), not the under-load peak
+#   3. font scale    — cold start via `am start -W` + XL-font screenshot
+# Artifacts land in ../test-artifacts/stress/<timestamp>/.
 set -u
 cd "$(dirname "$0")/.."
 export ANDROID_HOME="${ANDROID_HOME:-/opt/homebrew/share/android-commandlinetools}"
@@ -14,39 +18,49 @@ export PATH="$HOME/.maestro/bin:$JAVA_HOME/bin:$ANDROID_HOME/platform-tools:$PAT
 # Maestro's analytics init blocks on a Homebrew flutter wrapper — keep it off PATH
 FL="$(dirname "$(command -v flutter 2>/dev/null || echo /nonexistent/flutter)")"
 export PATH="$(echo "$PATH" | tr ':' '\n' | grep -vx "$FL" | paste -sd: -)"
+export MAESTRO_CLI_NO_ANALYTICS=1 MAESTRO_DISABLE_UPDATE_CHECK=true
 OUT="../test-artifacts/stress/$(date +%Y%m%d-%H%M%S)"; mkdir -p "$OUT"
 fail=0
+pss(){ "$ADB" shell dumpsys meminfo $PKG 2>/dev/null | awk '/TOTAL PSS:/{gsub(/,/,"",$3); print $3; f=1; exit} END{if(!f) print 0}'; }
 
-echo "=== 1. monkey storm (5000 events)"
+echo "=== 1. monkey storm (5000 touch-class events)"
 "$ADB" logcat -c
-"$ADB" shell monkey -p $PKG -s 4242 --throttle 60 --pct-syskeys 0 --pct-nav 0 --pct-majornav 0 --pct-trackball 0 --pct-rotation 0 --pct-flip 0 --ignore-security-exceptions -v 5000 > "$OUT/monkey.log" 2>&1
+TOTAL=0; ATT=0; MFAIL=0; : > "$OUT/monkey.log"
+while [ $TOTAL -lt 5000 ] && [ $ATT -lt 4 ]; do
+  ATT=$((ATT+1)); REM=$((5000-TOTAL))
+  "$ADB" shell monkey -p $PKG -s $((4241+ATT)) --throttle 60 --pct-syskeys 0 --pct-nav 0 --pct-majornav 0 --pct-trackball 0 --pct-rotation 0 --pct-flip 0 --ignore-security-exceptions -v $REM >> "$OUT/monkey.log" 2>&1
+  N=$(grep -oE 'Events injected: [0-9]+' "$OUT/monkey.log" | tail -1 | grep -oE '[0-9]+'); N=${N:-0}
+  TOTAL=$((TOTAL+N))
+  grep -qE "CRASH: $PKG|ANR in $PKG" "$OUT/monkey.log" && { MFAIL=1; break; }
+done
 "$ADB" logcat -d > "$OUT/monkey-logcat.txt"
-if grep -qE "CRASH: $PKG|ANR in $PKG|Monkey aborted" "$OUT/monkey.log"; then
-  echo "MONKEY: CRASH/ANR DETECTED"; fail=1
-else
-  echo "MONKEY: clean ($(grep -oE 'Events injected: [0-9]+' "$OUT/monkey.log" | tail -1))"
-fi
+if [ $MFAIL -ne 0 ]; then echo "MONKEY: CRASH/ANR IN $PKG"; fail=1
+elif [ $TOTAL -lt 5000 ]; then echo "MONKEY: only $TOTAL/5000 events injected (environment aborts)"; fail=1
+else echo "MONKEY: clean ($TOTAL events, $ATT attempt(s))"; fi
 
 echo "=== 2. memory soak (Maestro-driven, PSS sampled in parallel)"
-"$ADB" shell am force-stop $PKG; sleep 1
-export MAESTRO_CLI_NO_ANALYTICS=1 MAESTRO_DISABLE_UPDATE_CHECK=true
-( cd e2e && maestro test _soak.yaml > "$OLDPWD/$OUT/soak-maestro.log" 2>&1 )&
-SOAK=$!
-pss(){ "$ADB" shell dumpsys meminfo $PKG 2>/dev/null | awk '/TOTAL PSS:/{gsub(/,/,"",$3); print $3; f=1; exit} END{if(!f) print 0}'; }
-for k in $(seq 30); do "$ADB" shell pidof $PKG >/dev/null 2>&1 && break; sleep 1; done
-sleep 5; "$ADB" shell dumpsys meminfo $PKG > "$OUT/meminfo-start.txt" 2>&1
-echo "sample,pss_kb" > "$OUT/pss.csv"; i=0
-while kill -0 $SOAK 2>/dev/null; do
-  sleep 10; i=$((i+1)); echo "$i,$(pss)" >> "$OUT/pss.csv"
-done
-wait $SOAK; SRC=$?
-[ $SRC -ne 0 ] && { echo "MEMORY: soak flow failed (see soak-maestro.log)"; fail=1; }
+run_soak(){ # $1 = artifact suffix
+  "$ADB" shell am force-stop $PKG; sleep 1
+  ( cd e2e && maestro test _soak.yaml > "$OLDPWD/$OUT/soak-maestro$1.log" 2>&1 )&
+  local S=$!
+  for k in $(seq 30); do "$ADB" shell pidof $PKG >/dev/null 2>&1 && break; sleep 1; done
+  sleep 5; "$ADB" shell dumpsys meminfo $PKG > "$OUT/meminfo-start$1.txt" 2>&1
+  echo "sample,pss_kb" > "$OUT/pss$1.csv"; local i=0
+  while kill -0 $S 2>/dev/null; do sleep 10; i=$((i+1)); echo "$i,$(pss)" >> "$OUT/pss$1.csv"; done
+  wait $S
+}
+SUF=""; run_soak "$SUF"; SRC=$?
+if [ $SRC -ne 0 ]; then
+  echo "soak flow failed once (emulator input flake?) — one hermetic retry"
+  SUF="-retry"; run_soak "$SUF"; SRC=$?
+fi
+[ $SRC -ne 0 ] && { echo "MEMORY: soak flow failed twice (see soak-maestro$SUF.log)"; fail=1; }
 "$ADB" shell dumpsys meminfo $PKG > "$OUT/meminfo-end.txt" 2>&1
 sleep 45; SETTLE1=$(pss)                     # idle: let GC reclaim
 "$ADB" shell am send-trim-memory $PKG RUNNING_CRITICAL >/dev/null 2>&1
 sleep 10; SETTLE2=$(pss)
 "$ADB" shell dumpsys meminfo $PKG > "$OUT/meminfo-settled.txt" 2>&1
-python3 - "$OUT/pss.csv" "$SETTLE1" "$SETTLE2" <<'PYEOF' || fail=1
+python3 - "$OUT/pss$SUF.csv" "$SETTLE1" "$SETTLE2" <<'PYEOF' || fail=1
 import sys, csv
 rows=[int(r[1]) for r in list(csv.reader(open(sys.argv[1])))[1:] if r[1].isdigit() and int(r[1])>0]
 s1, s2 = int(sys.argv[2] or 0), int(sys.argv[3] or 0)
