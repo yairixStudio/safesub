@@ -108,7 +108,7 @@ app/
 | 2 | ~~`store.js`~~ → **נעשה**: `app/src/state/store.ts` על AsyncStorage (SQLite ב-Android) | [stack](docs/stack.md) |
 | 3 | **[חוסם להגשה]** proxy ל-AI + שכבת סירוב דטרמיניסטית למינונים | [ai-advisor](docs/ai-advisor.md) |
 | 4 | פונטים מקומית, safe-area, אימות `tel:101`, חישוב מחדש ב-resume | [stack](docs/stack.md) |
-| 5 | פרסום מסמך המתודולוגיה (מקורות `tp`/`hl`/`RISK`) — נדרש ל-1.4.1 | [app-store](docs/app-store.md) |
+| 5 | ~~פרסום מסמך המתודולוגיה~~ → **נעשה**: [`docs/methodology.md`](docs/methodology.md) (2026-08-31) | [app-store](docs/app-store.md) |
 | 6 | מכתב גיבוי מאל-סם / חוף מבטחים | [app-store](docs/app-store.md) |
 | 7 | TestFlight חיצוני — בדיקת מיצוב זולה לפני הגשה אמיתית | [app-store](docs/app-store.md) |
 | 8 | הגשה: דירוג 18+, Review Notes, תיאור חנות | [app-store](docs/app-store.md) |
@@ -134,3 +134,4 @@ app/
 | [`docs/app-store.md`](docs/app-store.md) | אסטרטגיית כניסה ל-App Store ו-Play: הסעיפים, המלכודות, חבילת ההגשה, ערעור |
 | [`docs/ai-advisor.md`](docs/ai-advisor.md) | ארכיטקטורת ה-proxy, מה חוצה את הרשת, שכבת הסירוב, ה-system prompt |
 | [`docs/testing.md`](docs/testing.md) | שלוש שכבות הבדיקה: golden בדמו, Jest באפליקציה, 11 זרימות Maestro על אמולטור |
+| [`docs/methodology.md`](docs/methodology.md) | מקורות ה-PK ומטריצת הסיכונים, האימות מול הספרות (2026-08-31), גבולות המודל — נדרש ל-1.4.1 |
