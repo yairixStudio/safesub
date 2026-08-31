@@ -3,6 +3,8 @@ appId: studio.yairix.safesub
 ---
 - launchApp:
     stopApp: false
+- tapOn:
+    id: "nav-subs"
 - assertVisible:
     id: "tile-cof"
 - tapOn:
@@ -28,6 +30,8 @@ appId: studio.yairix.safesub
           id: "btn-profile"
       - tapOn:
           id: "page-profile-back"
+      - tapOn:
+          id: "nav-subs"
       - tapOn:
           id: "tile-cof"
       - tapOn:
