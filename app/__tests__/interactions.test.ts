@@ -55,10 +55,12 @@ describe('advisor', () => {
   test('empty journal → empty reading', () => {
     expect(aiRead(makeEngine([], now, byId), makeTr('he'), byId, EMPTY_PROFILE).empty).toBe(true);
   });
-  test('anonymous summary never includes the name', () => {
-    const p = {...EMPTY_PROFILE, name:'Dana', age:31, meds:'lithium'};
+  test('anonymous summary carries age/sex/weight/height/meds but never the name', () => {
+    const p = {...EMPTY_PROFILE, name:'Dana', age:31, weight:62, height:168, sex:'f' as const, meds:'lithium'};
     const s = stateSummary(eng, makeTr('en'), byId, p);
-    expect(s).not.toContain('Dana'); expect(s).toContain('31'); expect(s).toContain('lithium');
+    expect(s).not.toContain('Dana');
+    expect(s).toContain('31'); expect(s).toContain('62 kg'); expect(s).toContain('168 cm');
+    expect(s).toContain('Female'); expect(s).toContain('lithium');
   });
   test('local responder answers the alcohol question against an open cannabis window', () => {
     const e2 = makeEngine([{id:'can', t:now-20*60000, q:1, sub:'joint', key:'c'}], now, byId);

@@ -55,8 +55,8 @@ export function stateSummary(eng:Engine, tr:Tr, byId:ById, profile:Profile): str
   const combo = wp ? tr.t('ai.state.combo', tr.sn(byId(wp.a)!), tr.sn(byId(wp.b)!), tr.sev(wp.r.sev), tr.rtxt(wp.r.k)) : '';
   const medsNote = profile.meds ? tr.t('ai.state.meds',profile.meds) : '';
   const sexLabel = profile.sex ? tr.t('profile.sex'+profile.sex.toUpperCase()) : '';
-  const demo = (profile.age||profile.weight||profile.sex)
-    ? tr.t('ai.state.profile',[profile.age&&tr.t('ai.state.years',profile.age),profile.weight&&tr.t('ai.state.kg',profile.weight),sexLabel].filter(Boolean).join(', ')) : '';
+  const demo = (profile.age||profile.weight||profile.height||profile.sex)
+    ? tr.t('ai.state.profile',[profile.age&&tr.t('ai.state.years',profile.age),profile.weight&&tr.t('ai.state.kg',profile.weight),profile.height&&tr.t('ai.state.cm',profile.height),sexLabel].filter(Boolean).join(', ')) : '';
   return `${tr.t('ai.state.prefix')}${parts}${combo}${medsNote}${demo}.`;
 }
 

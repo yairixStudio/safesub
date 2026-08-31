@@ -86,7 +86,7 @@ export const en = {
            item:(n,ph,r,hl)=>`${n}: ${ph}, ~${r} left in the window (t½ ${hl})`,
            combo:(a,b,sev,txt)=>` | active at-risk combination: ${a}+${b} (${sev}: ${txt})`,
            meds:m=>` | user listed regular medication: ${m}`, profile:p=>` | profile: ${p}`,
-           years:a=>`${a} years`, kg:w=>`${w} kg`, question:'User question: '},
+           years:a=>`${a} years`, kg:w=>`${w} kg`, cm:h=>`${h} cm`, question:'User question: '},
     local:{
       kwAlc:['אלכוהול','alcohol','drink'], kwSleep:['לישון','שינה','sleep'],
       alcCan:r=>`Your cannabis window is still open, and alcohol on top of it tends to increase dizziness and nausea (“greening out”). If you do — slowly, with water and food, and no driving. Consider waiting until the window closes (${r}). General information, not medical advice.`,
@@ -124,7 +124,7 @@ Binding principles:
     language:'Language', langS:'Default: Hebrew',
     privacy:'Privacy', privT:'Everything is stored on the device only', privS:'No account and no cloud. The only thing that leaves the device is an anonymous state summary for the advisor — and only when you ask.',
     wipe:'Delete all data', wipeS:'Journal, substance list and profile — permanently', wipeArm:'Tap again to delete everything',
-    advisor:'Advisor', advT:'What is sent to the model', advS:'Names of active substances, curve phase, time remaining, and regular medication if you entered it. No name, no identifier, no history.',
+    advisor:'Advisor', advT:'What is sent to the model', advS:'Names of active substances, curve phase, time remaining, and from the profile: age, sex, weight, height and regular medication if entered. No name, no identifier, no history.',
     support:'Support & emergency',
     about:'About', intro:'Show the intro again', introS:'The five welcome screens',
     method:'Every number here is an estimate', methodS:'Population averages from the literature — not a measurement and not medical advice. Individual variation (weight, sex, genetics, liver) is large.',
