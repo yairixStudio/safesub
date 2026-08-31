@@ -1,0 +1,34 @@
+# round-2 soak: SAME process (no clearState, no stop) — leak vs plateau probe
+appId: studio.yairix.safesub
+---
+- launchApp:
+    stopApp: false
+- assertVisible:
+    id: "tile-cof"
+- tapOn:
+    id: "tile-cof"
+- tapOn:
+    id: "when-30"
+- tapOn:
+    id: "sheet-save"
+- repeat:
+    times: 12
+    commands:
+      - tapOn:
+          id: "nav-intensity"
+      - tapOn:
+          id: "nav-log"
+      - tapOn:
+          id: "nav-subs"
+      - tapOn:
+          id: "btn-settings"
+      - tapOn:
+          id: "page-settings-back"
+      - tapOn:
+          id: "btn-profile"
+      - tapOn:
+          id: "page-profile-back"
+      - tapOn:
+          id: "tile-cof"
+      - tapOn:
+          id: "sheet-save"
