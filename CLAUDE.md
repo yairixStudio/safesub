@@ -135,3 +135,4 @@ app/
 | [`docs/ai-advisor.md`](docs/ai-advisor.md) | ארכיטקטורת ה-proxy, מה חוצה את הרשת, שכבת הסירוב, ה-system prompt |
 | [`docs/testing.md`](docs/testing.md) | שלוש שכבות הבדיקה: golden בדמו, Jest באפליקציה, 11 זרימות Maestro על אמולטור |
 | [`docs/methodology.md`](docs/methodology.md) | מקורות ה-PK ומטריצת הסיכונים, האימות מול הספרות (2026-08-31), גבולות המודל — נדרש ל-1.4.1 |
+| [`docs/production.md`](docs/production.md) | מוכנות פרודקשן: אמינות, ביצועים, אנרגיה, אכיפת פרטיות, והפערים שנשארו (חתימה, proxy, iOS) |
