@@ -14,8 +14,9 @@ import {T, Row, Chip, Btn, HScroll} from './common';
 const WINDOW_MS = 15000;
 /* The countdown bar and digits are drawn in SVG on purpose: SVG content is not
    a native View, so the accessibility/UI-automation hierarchy stays static
-   while they animate (a per-second changing view tree stalls UI drivers). */
-const ARect = Animated.createAnimatedComponent(Rect);
+   while they animate. The bar is STEPPED from state (500 ms ticks) rather than
+   Animated: under R8, Animated's per-frame native-prop path on SVG can fall
+   back to per-frame re-renders, which stalls UI drivers again. */
 const hhmm = (ms:number) => { const d=new Date(ms); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); };
 
 /* The commit / edit sheet. In "new" mode a 15-second bar counts down and the
@@ -28,8 +29,8 @@ export function LogSheet({entryKey, mode, onClose, onAskAi}:{entryKey:string|nul
   const s = e ? byId(e.id) : undefined;
   const open = !!e && !!s;
   const y = useRef(new Animated.Value(1)).current;
-  const bar = useRef(new Animated.Value(1)).current;
   const [secs, setSecs] = useState(15);
+  const [frac, setFrac] = useState(1);
   const [whenSel, setWhenSel] = useState<number|'time'>(0);
   const [timeTxt, setTimeTxt] = useState('');
   const deadline = useRef(0);
@@ -40,14 +41,12 @@ export function LogSheet({entryKey, mode, onClose, onAskAi}:{entryKey:string|nul
 
   function reset(){
     if(mode!=='new') return;
-    deadline.current = Date.now()+WINDOW_MS; setSecs(15);
-    bar.stopAnimation(); bar.setValue(1);
-    Animated.timing(bar,{toValue:0,duration:WINDOW_MS,useNativeDriver:false}).start();
+    deadline.current = Date.now()+WINDOW_MS; setSecs(15); setFrac(1);
   }
   useEffect(()=>{
     if(!open){ if(timer.current){ clearInterval(timer.current); timer.current=null; } return; }
     setWhenSel(mode==='new'?0:'time'); setTimeTxt(mode==='edit'&&e?hhmm(e.t):'');
-    if(mode==='new'){ reset(); timer.current=setInterval(()=>{ const left=deadline.current-Date.now(); setSecs(Math.max(0,Math.ceil(left/1000))); if(left<=0){ clearInterval(timer.current!); timer.current=null; onClose(); } },250); }
+    if(mode==='new'){ reset(); timer.current=setInterval(()=>{ const left=deadline.current-Date.now(); setSecs(Math.max(0,Math.ceil(left/1000))); setFrac(Math.max(0,left/WINDOW_MS)); if(left<=0){ clearInterval(timer.current!); timer.current=null; onClose(); } },500); }
     return ()=>{ if(timer.current){ clearInterval(timer.current); timer.current=null; } };
   },[open, entryKey, mode]);
 
@@ -78,7 +77,7 @@ export function LogSheet({entryKey, mode, onClose, onAskAi}:{entryKey:string|nul
         {mode==='new' ? <View style={{height:2, marginHorizontal:-16}} onLayout={e=>setBarW(e.nativeEvent.layout.width)}>
           {barW ? <Svg width={barW} height={2}>
             <Rect x={0} y={0} width={barW} height={2} fill={colors.lineHard}/>
-            <ARect y={0} height={2} fill={colors.ember} width={bar.interpolate({inputRange:[0,1],outputRange:[0,barW]})} x={dir.rtl ? bar.interpolate({inputRange:[0,1],outputRange:[barW,0]}) : 0}/>
+            <Rect y={0} height={2} fill={colors.ember} width={Math.max(0,barW*frac)} x={dir.rtl ? barW*(1-frac) : 0}/>
           </Svg> : null}
         </View> : null}
         <ScrollView keyboardShouldPersistTaps="handled" bounces={false}>
