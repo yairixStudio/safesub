@@ -44,8 +44,10 @@ export function makeEngine(log: Entry[], now: number, byId: (id:string)=>Sub|und
   for(let i=0;i<log.length;i++){
     const e=log[i], s0=byId(e.id);
     if(!s0) continue;
+    /* the store sanitises, but the engine must survive anything that slips through */
+    const t=e.t, q=e.q;
+    if(typeof t!=='number' || !Number.isFinite(t) || typeof q!=='number' || !Number.isFinite(q)) continue;
     let raw=rawBy.get(e.id); if(!raw){ raw=[]; rawBy.set(e.id,raw); } raw.push(e);
-    const t=e.t;
     if(t>=dayStart && t<dayEnd) today.set(e.id,(today.get(e.id)||0)+(s0.u===MG?1:e.q));
     if(s0.kind==='chronic') continue;
     /* the sub-type morph */
@@ -57,8 +59,10 @@ export function makeEngine(log: Entry[], now: number, byId: (id:string)=>Sub|und
     const df = (s0.u===MG && s0.def) ? Math.min(2.4, e.q/s0.def) : Math.min(2.4, .6+.4*e.q);
     const clearMin = kind===1 ? e.q*90/(s0.rate||1) : 0;   /* ~90 min per unit */
     const end = kind===1 ? clearMin+tp+30 : tp+(hl||180)*6;
+    const ageNow=(now-t)/60000;
+    if(ageNow>=end) continue;      /* past its horizon: contributes exactly 0 — skip the hot path */
     let a=prep.get(e.id); if(!a){ a=[]; prep.set(e.id,a); }
-    a.push({ageNow:(now-t)/60000, kind, tp, hl:hl||180, df, clearMin, end});
+    a.push({ageNow, kind, tp, hl:hl||180, df, clearMin, end});
   }
   const prepped = (id:string): Prepped[] => prep.get(id)||EMPTY;
 

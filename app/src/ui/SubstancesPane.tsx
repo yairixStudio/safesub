@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {Keyboard, Pressable, ScrollView, TextInput, View} from 'react-native';
 import {useApp} from '../state/AppContext';
 import {searchText} from '../i18n';
@@ -14,6 +14,8 @@ export function SubstancesPane({onLog, onCtx, searchRef}:{onLog:(id:string)=>voi
   const app = useApp(); const {colors, dir, tr, subs, my, byId} = app;
   const [q, setQ] = useState('');
   const [fresh, setFresh] = useState<string|null>(null);
+  const freshT = useRef<ReturnType<typeof setTimeout>|null>(null);
+  useEffect(()=>()=>{ if(freshT.current) clearTimeout(freshT.current); },[]);
   const v = q.trim();
 
   const hits = useMemo(()=>{
@@ -27,9 +29,13 @@ export function SubstancesPane({onLog, onCtx, searchRef}:{onLog:(id:string)=>voi
   /* the keyboard must go away with the results, otherwise the next tap on the
      grid only dismisses it and the tile never fires */
   function add(id:string){
-    app.addToList(id); setQ(''); Keyboard.dismiss(); searchRef.current?.blur(); setFresh(id); setTimeout(()=>setFresh(f=>f===id?null:f),700);
+    app.addToList(id); setQ(''); Keyboard.dismiss(); searchRef.current?.blur(); setFresh(id);
+    if(freshT.current) clearTimeout(freshT.current);
+    freshT.current=setTimeout(()=>setFresh(f=>f===id?null:f),700);
   }
-  function addCustom(){ const s=app.addCustom(v); setQ(''); Keyboard.dismiss(); searchRef.current?.blur(); setFresh(s.id); setTimeout(()=>setFresh(null),700); }
+  function addCustom(){ const s=app.addCustom(v); setQ(''); Keyboard.dismiss(); searchRef.current?.blur(); setFresh(s.id);
+    if(freshT.current) clearTimeout(freshT.current);
+    freshT.current=setTimeout(()=>setFresh(null),700); }
 
   const mine = my.map(byId).filter(Boolean) as Sub[];
   const rows: (Sub|'add')[][] = [];

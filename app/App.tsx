@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {BackHandler, Pressable, TextInput, View} from 'react-native';
+import {BackHandler, Pressable, Text, TextInput, View} from 'react-native';
 import {StatusBar} from 'expo-status-bar';
 import {useFonts} from 'expo-font';
 import {IBMPlexSansHebrew_300Light, IBMPlexSansHebrew_400Regular, IBMPlexSansHebrew_500Medium, IBMPlexSansHebrew_600SemiBold, IBMPlexSansHebrew_700Bold} from '@expo-google-fonts/ibm-plex-sans-hebrew';
@@ -26,12 +26,34 @@ import {alpha} from './src/theme/tokens';
    Unset → the local rule-based responder answers, so the app always works. */
 const AI_PROXY = process.env.EXPO_PUBLIC_AI_PROXY || '';
 
+/* the last line of defence: a render/JS error shows a recovery screen instead
+   of a native crash; state on disk is untouched */
+class ErrorBoundary extends React.Component<{children:React.ReactNode},{err:Error|null; key:number}>{
+  state={err:null as Error|null, key:0};
+  static getDerivedStateFromError(err:Error){ return {err}; }
+  componentDidCatch(err:Error){ console.error('safesub crashed:', err); }
+  render(){
+    if(this.state.err) return (
+      <View style={{flex:1, backgroundColor:'#0A0D11', alignItems:'center', justifyContent:'center', padding:32, gap:14}}>
+        <Text style={{color:'#E7ECF2', fontSize:16, fontWeight:'600', textAlign:'center'}}>משהו השתבש · Something went wrong</Text>
+        <Text style={{color:'#93A1B1', fontSize:12, textAlign:'center'}}>{String(this.state.err?.message||'').slice(0,200)}</Text>
+        <Pressable testID="crash-recover" onPress={()=>this.setState({err:null, key:this.state.key+1})}
+          style={{backgroundColor:'#8B9DF7', borderRadius:3, paddingVertical:12, paddingHorizontal:28}}>
+          <Text style={{color:'#0C1020', fontWeight:'600'}}>נסה שוב · Try again</Text>
+        </Pressable>
+      </View>);
+    return <React.Fragment key={this.state.key}>{this.props.children}</React.Fragment>;
+  }
+}
+
 export default function App(){
   const [fontsLoaded] = useFonts({IBMPlexSansHebrew_300Light, IBMPlexSansHebrew_400Regular, IBMPlexSansHebrew_500Medium, IBMPlexSansHebrew_600SemiBold, IBMPlexSansHebrew_700Bold, IBMPlexMono_400Regular, IBMPlexMono_500Medium, IBMPlexMono_600SemiBold});
   return (
     <GestureHandlerRootView style={{flex:1, backgroundColor:'#0A0D11'}}>
       <SafeAreaProvider>
-        <AppProvider>{fontsLoaded ? <Root/> : <View style={{flex:1, backgroundColor:'#0A0D11'}}/>}</AppProvider>
+        <ErrorBoundary>
+          <AppProvider>{fontsLoaded ? <Root/> : <View style={{flex:1, backgroundColor:'#0A0D11'}}/>}</AppProvider>
+        </ErrorBoundary>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

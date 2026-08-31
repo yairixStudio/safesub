@@ -80,11 +80,15 @@ export function AppProvider({children}:{children:React.ReactNode}){
   useEffect(()=>{ let alive=true; restore().then(p=>{ if(!alive) return; dispatch({t:'restore', s:p ? {log:p.log, my:p.my, profile:p.profile, settings:p.settings, custom:p.custom} : {}}); }); return ()=>{ alive=false; }; },[]);
   /* persist every change after restore */
   useEffect(()=>{ if(!s.ready) return; persist({v:1, settings:s.settings, my:s.my, profile:s.profile, custom:s.custom, log:s.log}); },[s]);
-  /* one clock: 30 s tick, and a re-clock when the app returns to the foreground */
+  /* one clock: 30 s tick while active only — nothing runs in the background
+     (battery), and returning to the foreground re-clocks immediately */
   useEffect(()=>{
-    const iv=setInterval(()=>setNow(Date.now()),30000);
-    const sub=AppState.addEventListener('change',st=>{ if(st==='active') setNow(Date.now()); });
-    return ()=>{ clearInterval(iv); sub.remove(); };
+    let iv: ReturnType<typeof setInterval>|null = null;
+    const start=()=>{ if(!iv) iv=setInterval(()=>setNow(Date.now()),30000); };
+    const stop=()=>{ if(iv){ clearInterval(iv); iv=null; } };
+    start();
+    const sub=AppState.addEventListener('change',st=>{ if(st==='active'){ setNow(Date.now()); start(); } else stop(); });
+    return ()=>{ stop(); sub.remove(); };
   },[]);
 
   const subs = useMemo(()=>[...SUBS, ...s.custom],[s.custom]);
@@ -99,7 +103,7 @@ export function AppProvider({children}:{children:React.ReactNode}){
   const logRef = useRef(s.log); logRef.current = s.log;
   const bump = useCallback(()=>setNow(Date.now()),[]);
 
-  const api: App = {
+  const api: App = useMemo(()=>({
     ...s, subs, byId, now, eng, tr, lang:s.settings.lang, dir, colors, bump,
     addEntry(id){
       const sub=byId(id); const e:Entry={id, t:Date.now(), q:sub?.def||1, sub:null, key:'k'+Date.now()};
@@ -119,6 +123,6 @@ export function AppProvider({children}:{children:React.ReactNode}){
     finishOnb(){ dispatch({t:'settings', settings:{onb:true}}); },
     showOnb(){ dispatch({t:'settings', settings:{onb:false}}); },
     async wipe(){ await wipeStore(); dispatch({t:'wipe'}); },
-  };
+  }), [s, subs, byId, now, eng, tr, dir, colors, bump]);
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>;
 }

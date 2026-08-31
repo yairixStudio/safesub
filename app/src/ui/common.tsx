@@ -24,7 +24,7 @@ export function T({children, f='sans', c, size=13, style, align, numberOfLines, 
   const mixed = /[A-Za-z]/.test(first) && /[\u0590-\u05FF]/.test(first);
   const opposite = mixed && (dir.rtl ? /[A-Za-z]/.test(strong) : /[\u0590-\u05FF]/.test(strong));
   const mark = opposite ? (dir.rtl ? '\u200F' : '\u200E') : '';
-  return <Text testID={testID} numberOfLines={numberOfLines} accessible={!a11yHidden} importantForAccessibility={a11yHidden?'no-hide-descendants':'auto'} style={[{fontFamily:F[f], color:c||colors.bone, fontSize:size, textAlign:align||dir.textAlign, writingDirection:dir.rtl?'rtl':'ltr'}, style]}>{mark}{children}</Text>;
+  return <Text testID={testID} maxFontSizeMultiplier={1.4} numberOfLines={numberOfLines} accessible={!a11yHidden} importantForAccessibility={a11yHidden?'no-hide-descendants':'auto'} style={[{fontFamily:F[f], color:c||colors.bone, fontSize:size, textAlign:align||dir.textAlign, writingDirection:dir.rtl?'rtl':'ltr'}, style]}>{mark}{children}</Text>;
 }
 
 /* a row laid out in reading direction */

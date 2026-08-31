@@ -26,7 +26,7 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "./plugins/withNoRtl.js"
+      "./plugins/withAndroidTweaks.js"
     ]
   }
 }

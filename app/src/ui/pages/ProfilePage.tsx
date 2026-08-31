@@ -8,6 +8,8 @@ export function ProfilePage({open, onClose}:{open:boolean; onClose:()=>void}){
   const app = useApp(); const {colors, dir, tr, profile} = app;
   const [name,setName]=useState(''); const [age,setAge]=useState(''); const [weight,setWeight]=useState(''); const [height,setHeight]=useState('');
   const [sex,setSex]=useState<'f'|'m'|'x'|null>(null); const [meds,setMeds]=useState(''); const [saved,setSaved]=useState(false);
+  const closeT = React.useRef<ReturnType<typeof setTimeout>|null>(null);
+  useEffect(()=>()=>{ if(closeT.current) clearTimeout(closeT.current); },[]);
   useEffect(()=>{ if(!open) return; setName(profile.name||''); setAge(profile.age?String(profile.age):''); setWeight(profile.weight?String(profile.weight):''); setHeight(profile.height?String(profile.height):''); setSex(profile.sex); setMeds(profile.meds||''); setSaved(false); },[open]);
   const Field=({label, value, onChange, placeholder, numeric, testID, flex}:{label:string; value:string; onChange:(v:string)=>void; placeholder:string; numeric?:boolean; testID:string; flex?:number})=>(
     <View style={{flex:flex??1, minWidth:0}}>
@@ -16,7 +18,7 @@ export function ProfilePage({open, onClose}:{open:boolean; onClose:()=>void}){
         style={{height:38, borderRadius:3, backgroundColor:colors.slate1, borderWidth:1, borderColor:colors.lineHard, paddingHorizontal:11, paddingVertical:0, color:colors.bone, fontFamily:numeric?'IBMPlexMono_400Regular':'IBMPlexSansHebrew_400Regular', fontSize:13.5, textAlign:dir.textAlign}}/>
     </View>
   );
-  const save=()=>{ app.saveProfile({name:name.trim(), age:+age||null, weight:+weight||null, height:+height||null, sex, meds:meds.trim()}); setSaved(true); setTimeout(onClose,550); };
+  const save=()=>{ app.saveProfile({name:name.trim(), age:+age||null, weight:+weight||null, height:+height||null, sex, meds:meds.trim()}); setSaved(true); if(closeT.current) clearTimeout(closeT.current); closeT.current=setTimeout(onClose,550); };
   return (
     <Page open={open} onClose={onClose} title={tr.t('profile.title')} testID="page-profile"
       right={<Row gap={5}><Icon k="lock" size={10} color={colors.dust} strokeWidth={1.8}/><T f="mono" size={9} c={colors.dust} style={{letterSpacing:.2}}>{tr.t('profile.local')}</T></Row>}>
