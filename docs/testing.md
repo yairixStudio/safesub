@@ -28,6 +28,10 @@
 
 צילומי מסך ולוגים: `test-artifacts/e2e/<timestamp>/`.
 
+## סוללת עומס (production)
+
+`./e2e/stress.sh` על האמולטור: (1) **monkey** — 5,000 אירועי קלט אקראיים, נכשל על CRASH/ANR; (2) **memory soak** — דגימת PSS לאורך 10 מחזורי UI כבדים, נכשל על צמיחה >40% (דליפה); (3) **font scale 1.3** — צילום לביקורת פריסה. תוצרים ב-`test-artifacts/stress/`.
+
 ## דרישות סביבה
 
 JDK 17, Android SDK (API 34), AVD, Maestro. `e2e/run.sh` מגדיר `JAVA_HOME`/`ANDROID_HOME` לברירות המחדל של Homebrew ומסתיר את `flutter` מ-PATH (Maestro נתקע עליו).
