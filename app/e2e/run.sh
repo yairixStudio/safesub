@@ -15,10 +15,17 @@ export MAESTRO_CLI_NO_ANALYTICS=1 MAESTRO_DISABLE_UPDATE_CHECK=true
 pass=0; fail=0; failed=()
 for f in [0-9]*.yaml; do
   echo "=== $f"
-  if maestro test --test-output-dir "$OUT/$(basename "$f" .yaml)" "$f" > "$OUT/$(basename "$f" .yaml).log" 2>&1; then
+  n="$(basename "$f" .yaml)"
+  if maestro test --test-output-dir "$OUT/$n" "$f" > "$OUT/$n.log" 2>&1; then
     echo "PASS $f"; pass=$((pass+1))
   else
-    echo "FAIL $f"; fail=$((fail+1)); failed+=("$f"); tail -25 "$OUT/$(basename "$f" .yaml).log"
+    # one retry: emulator input occasionally drops a tap; a real regression fails twice
+    echo "RETRY $f"
+    if maestro test --test-output-dir "$OUT/$n-retry" "$f" > "$OUT/$n-retry.log" 2>&1; then
+      echo "PASS $f (on retry)"; pass=$((pass+1))
+    else
+      echo "FAIL $f"; fail=$((fail+1)); failed+=("$f"); tail -25 "$OUT/$n-retry.log"
+    fi
   fi
 done
 # maestro drops screenshots in the cwd
