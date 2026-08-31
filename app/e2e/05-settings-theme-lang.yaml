@@ -1,7 +1,8 @@
 # Settings page: light/dark, English/Hebrew, back button in both directions.
 appId: studio.yairix.safesub
 ---
-- launchApp
+- launchApp:
+    clearState: true
 - runFlow: _skip-onboarding.yaml
 - tapOn:
     id: "btn-settings"

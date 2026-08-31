@@ -1,7 +1,8 @@
 # Search the catalogue, add a cigarette, log it with a sub-type and quantity, see it in the journal.
 appId: studio.yairix.safesub
 ---
-- launchApp
+- launchApp:
+    clearState: true
 - runFlow: _skip-onboarding.yaml
 - tapOn:
     id: "search"
