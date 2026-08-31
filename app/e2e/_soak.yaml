@@ -1,0 +1,40 @@
+# memory-soak driver: hermetic start, one live entry, then repeated heavy UI
+# cycles (pane nav, page opens, sheet open/close). PSS is sampled from outside
+# by stress.sh while this runs.
+appId: studio.yairix.safesub
+---
+- launchApp:
+    clearState: true
+- runFlow: _skip-onboarding.yaml
+- runFlow:
+    file: _add.yaml
+    env:
+      Q: "קפה"
+      ID: "cof"
+- tapOn:
+    id: "tile-cof"
+- tapOn:
+    id: "when-30"
+- tapOn:
+    id: "sheet-save"
+- repeat:
+    times: 12
+    commands:
+      - tapOn:
+          id: "nav-intensity"
+      - tapOn:
+          id: "nav-log"
+      - tapOn:
+          id: "nav-subs"
+      - tapOn:
+          id: "btn-settings"
+      - tapOn:
+          id: "page-settings-back"
+      - tapOn:
+          id: "btn-profile"
+      - tapOn:
+          id: "page-profile-back"
+      - tapOn:
+          id: "tile-cof"
+      - tapOn:
+          id: "sheet-save"
