@@ -69,7 +69,7 @@ node test/run.mjs        # PASS = העקומות לא זזו
 **מה שעדיין לא קיים — אלה לא פרטי פורט, אלה עבודה אמיתית:**
 
 - ⚠️ **שמירה — רק לדפדפן.** מאז 2026-08-28 הדמו שומר הכל (`LOG`, `MY`, פרופיל, הגדרות, חומרים מותאמים) ב-`localStorage` דרך `persist()/restore()`. זה **לא** `store.js` של stack.md: ב-native WKWebView מפנה localStorage תחת לחץ, ולכן פעולה 2 עדיין חוסמת.
-- ❌ **קריאת ה-AI לא יכולה לעלות לאוויר.** `fetch('https://api.anthropic.com/v1/messages')` בלי אימות עובד רק בתוך sandbox של Claude artifacts. גם מזהה המודל שבקוד ישן.
+- ✅ ~~קריאת ה-AI לא יכולה לעלות לאוויר~~ — יש proxy ב-`proxy/` (שכבת סירוב + מפתח בצד שרת); האפליקציה מחוברת דרך `EXPO_PUBLIC_AI_PROXY` עם נפילה חיננית ל-`localReply()`. נותרה פריסה ([docs/ai-advisor.md](docs/ai-advisor.md)). מזהה המודל בדמו עודכן.
 - ✅ ~~אין build system, אין הפרדה למודולים, אין מעטפת native~~ — יש: `app/` (Expo, מודולים, Android build). iOS טרם נבדק.
 
 ---
@@ -106,7 +106,7 @@ app/
 |---|---|---|
 | 1 | ~~Vite scaffold~~ → **נעשה ב-RN** (`app/`), 2026-08-28 | [stack](docs/stack.md) |
 | 2 | ~~`store.js`~~ → **נעשה**: `app/src/state/store.ts` על AsyncStorage (SQLite ב-Android) | [stack](docs/stack.md) |
-| 3 | **[חוסם להגשה]** proxy ל-AI + שכבת סירוב דטרמיניסטית למינונים | [ai-advisor](docs/ai-advisor.md) |
+| 3 | ~~proxy ל-AI + שכבת סירוב~~ → **הקוד נעשה** (`proxy/`, ‏2026-09-02, ‏40 בדיקות לשכבת הסירוב); **[חוסם]** נותרה פריסה: `wrangler secret put` + `deploy` | [ai-advisor](docs/ai-advisor.md) |
 | 4 | פונטים מקומית, safe-area, אימות `tel:101`, חישוב מחדש ב-resume | [stack](docs/stack.md) |
 | 5 | ~~פרסום מסמך המתודולוגיה~~ → **נעשה**: [`docs/methodology.md`](docs/methodology.md) (2026-08-31) | [app-store](docs/app-store.md) |
 | 6 | מכתב גיבוי מאל-סם / חוף מבטחים | [app-store](docs/app-store.md) |

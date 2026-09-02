@@ -2678,7 +2678,7 @@ function stateSummary(){
 }
 async function callClaude(userText){
   const body = {
-    model:'claude-sonnet-4-6',
+    model:'claude-opus-5',
     max_tokens:1000,
     system:t('ai.system'),
     messages:[{role:'user', content:`${stateSummary()}\n\n${t('ai.state.question')}${userText}`}]

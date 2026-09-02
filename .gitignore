@@ -34,3 +34,4 @@ test-artifacts/
 # local AI tooling config — never committed
 .claude/
 app/.claude/
+proxy/node_modules/

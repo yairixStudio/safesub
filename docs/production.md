@@ -35,7 +35,7 @@
 | פער | מי מחליט/מספק |
 |---|---|
 | **חתימת release** — כרגע ה-release חתום ב-debug keystore של התבנית. נדרש keystore אמיתי (או Play App Signing) | בעל המוצר — יצירת מפתח וסודות |
-| **proxy ה-AI** ‏(`EXPO_PUBLIC_AI_PROXY`) + שכבת הסירוב הדטרמיניסטית | פריסה לשרת; מפתח API |
+| **proxy ה-AI** — **הקוד נעשה** (`proxy/`, כולל שכבת הסירוב + בדיקות); נותרה פריסה בלבד | בעל המוצר: `wrangler secret put ANTHROPIC_API_KEY` + `npm run deploy` |
 | iOS — לא נבנה ולא נבדק בפרויקט זה | דורש macOS signing + מכשיר/סימולטור |
 | Local Notifications ("החלון נסגר בעוד 20 דק׳") | פיצ'ר עתידי (docs/stack.md) |
 | Crash reporting מרוחק | **החלטה מוצרית** — עומד בסתירה ל"אפס טלמטריה"; כרגע בכוונה אין |

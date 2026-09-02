@@ -6,6 +6,20 @@
 
 ---
 
+## סטטוס: מומש (2026-09-02) — נותרה פריסה בלבד
+
+ה-proxy קיים ב-[`proxy/`](../proxy/) — Cloudflare Worker רזה:
+
+- **שכבת הסירוב הדטרמיניסטית** ב-`proxy/src/refusal.mjs`, רצה לפני כל קריאת מודל, עם **40 בדיקות יחידה** (`npm test`, ללא רשת) שמכסות גם את החריגים הרגישים: "how to make it stop" ו"איפה מקבלים עזרה" עוברים, "כמה לקחת" נחסם.
+- **ה-system prompt חי בשרת** (`proxy/src/prompts.mjs`), לא בלקוח — המכשיר לא יכול להחליש אותו. (אגב: `t('ai.system')` בדמו הפנה למפתח שמעולם לא הוגדר במילונים — הנוסח הקנוני הוא זה שב-proxy.)
+- **אפס לוגים של תוכן**; שגיאות נספרות לפי סטטוס בלבד. **rate limit אנונימי** לפי IP (binding של Cloudflare, בלי חשבונות).
+- מודל: `claude-opus-5`, ‏`output_config: {effort:'low'}`, ‏fallbacks צד-שרת (`fallbacks:'default'`) — דחיית מדיניות מנותבת מחדש באותה קריאה, ודחייה סופית מחזירה טקסט רגוע במקום שגיאה.
+- חוזה מול האפליקציה: ‏`POST {lang, summary, question}` ← ‏`{text}`; על כל לא-200 האפליקציה נופלת ל-`localReply()`.
+
+**מה שנותר (בעל המוצר):** ‏`npx wrangler secret put ANTHROPIC_API_KEY` + ‏`npm run deploy`, ואז לבנות את האפליקציה עם `EXPO_PUBLIC_AI_PROXY`. פירוט: [`proxy/README.md`](../proxy/README.md).
+
+---
+
 ## הבעיה
 
 `demo-reference.html` קורא ל-`fetch('https://api.anthropic.com/v1/messages')` **בלי header של אימות.** זה עובד רק בתוך ה-sandbox של Claude artifacts. **אי אפשר לשלוח את זה לאוויר.**

@@ -1,0 +1,11 @@
+name = "safesub-ai-proxy"
+main = "src/worker.mjs"
+compatibility_date = "2026-08-01"
+
+# anonymous per-IP rate limit — no accounts, no identifiers stored
+[[ratelimits]]
+binding = "RATE_LIMITER"
+namespace_id = "1001"
+simple = { limit = 10, period = 60 }
+
+# secret (never in this file):  npx wrangler secret put ANTHROPIC_API_KEY
