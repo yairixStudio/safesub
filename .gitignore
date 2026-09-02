@@ -30,3 +30,7 @@ app/ios/Pods/
 # test artefacts
 test-artifacts/
 *.log
+
+# local AI tooling config — never committed
+.claude/
+app/.claude/
