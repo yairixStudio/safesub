@@ -64,12 +64,13 @@ dosing content is closed on sight.
 
 ## License & attribution
 
-[MIT](LICENSE) — use it, fork it, build on it, commercially or not.
+[The Unlicense](LICENSE) — **public domain.** Use it, fork it, sell it, embed
+it, for any purpose; no conditions, no notice to keep — not even attribution
+is required.
 
-**One ask:** if you ship something built on safesub — an app, a fork, a study —
-please credit **“safesub by Yairix Studio”** prominently (about screen, README,
-or equivalent), with a link to this repository. The MIT license already requires
-keeping the copyright notice; the prominent credit is how you say thanks.
+**One ask (a request, not a requirement):** if you ship something built on
+safesub — an app, a fork, a study — we'd love a credit to
+**“safesub by Yairix Studio”** with a link to this repository.
 
 ## Legal & disclaimer
 
