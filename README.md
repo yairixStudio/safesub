@@ -52,3 +52,58 @@ Requirements: Node ≥ 20, JDK 17, Android SDK (API 34+), an AVD, Maestro.
 2. **Not medical advice.** Emergency: MDA 101 · emotional first aid: ERAN 1201.
 3. **Everything is an estimate.** Population averages; individual variation is shown, and so is how strong the data is (A/B/C per substance).
 4. **Privacy above all.** No account, no cloud. The only thing that ever leaves the device is an anonymous state summary for the AI advisor — and only when you ask.
+
+## Contributing
+
+Contributions are very welcome — especially **pharmacokinetic data with sources,
+interaction rules, translations, and tests**. Start with
+[CONTRIBUTING.md](CONTRIBUTING.md): it explains exactly what we're looking for,
+the workflow (the demo file is the source of truth; generated files are never
+edited by hand; the golden curve test must pass), and the red lines — any
+dosing content is closed on sight.
+
+## License & attribution
+
+[MIT](LICENSE) — use it, fork it, build on it, commercially or not.
+
+**One ask:** if you ship something built on safesub — an app, a fork, a study —
+please credit **“safesub by Yairix Studio”** prominently (about screen, README,
+or equivalent), with a link to this repository. The MIT license already requires
+keeping the copyright notice; the prominent credit is how you say thanks.
+
+## Legal & disclaimer
+
+**safesub is an informational tool — not a medical device, and not medical advice.**
+
+- Every number in the app is a **population-average estimate** from published
+  literature, not a measurement of your body. Individual response varies widely
+  (weight, sex, genetics, liver function, tolerance, interactions). Never use
+  the app to conclude you are "safe" to drive, work, or take anything.
+- The app **deliberately contains no dosing information** and will not provide any.
+- Nothing in the app or this repository encourages the use of any substance.
+  safesub exists to **reduce harm for adults (18+)** who have already made their
+  own choices.
+- Using safesub creates **no doctor–patient relationship**. For medical questions
+  see a clinician. **In an emergency in Israel: MDA 101** · emotional first aid:
+  ERAN 1201.
+- Some substances in the catalogue are **illegal to possess or use** in Israel
+  and elsewhere. Nothing here is legal advice, and the project does not assist
+  in obtaining anything.
+- The software is provided **“as is”, without warranty of any kind**; the authors
+  and contributors accept **no liability** for anything done or not done based on
+  it — see [LICENSE](LICENSE).
+
+<details><summary><b>עברית</b></summary>
+
+**safesub הוא כלי מידע — לא מכשיר רפואי ולא ייעוץ רפואי.** כל מספר באפליקציה
+הוא הערכת ממוצע-אוכלוסייה מהספרות המקצועית, לא מדידה של הגוף שלך; השונות
+הבין-אישית גדולה (משקל, מין, גנטיקה, תפקוד כבד, סבילות). אל תשתמש באפליקציה
+כדי להסיק שאתה "בסדר" לנהוג, לעבוד או לקחת משהו. האפליקציה אינה מכילה מידע
+מינונים — בכוונה. אין כאן עידוד לשימוש בשום חומר; המטרה היא צמצום נזקים
+למבוגרים 18+ שכבר קיבלו את החלטותיהם. השימוש אינו יוצר יחסי רופא–מטופל;
+**בחירום: מד״א 101** · עזרה נפשית: ער״ן 1201. חלק מהחומרים בקטלוג אינם חוקיים
+להחזקה או לשימוש; אין כאן ייעוץ משפטי ואין סיוע בהשגה. התוכנה ניתנת
+**"כמות שהיא" (AS IS) ללא כל אחריות**, והמחברים והתורמים אינם נושאים בכל חבות —
+ראו [LICENSE](LICENSE).
+
+</details>
