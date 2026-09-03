@@ -28,6 +28,9 @@ h1{font-size:2rem;letter-spacing:-.01em;margin-bottom:10px}
 .tag{color:var(--haze);font-size:1.05rem;line-height:1.6;margin-bottom:30px;max-width:440px}
 .badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:34px}
 .badge{font-size:.78rem;color:var(--dust);border:1px solid var(--line-hard);background:var(--slate-1);border-radius:999px;padding:5px 12px}
+.screens-cap{color:var(--dust);font-size:.8rem;margin-bottom:16px}
+.screens{display:flex;gap:16px;justify-content:center;align-items:flex-start;margin-bottom:36px;flex-wrap:wrap}
+.screens img{width:230px;max-width:44vw;border-radius:20px;border:1px solid var(--line-hard);box-shadow:0 26px 60px -22px rgba(0,0,0,.65);display:block;background:var(--slate-1)}
 .actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:14px}
 .btn{
   display:inline-flex;align-items:center;gap:8px;font-size:.98rem;font-weight:600;
@@ -65,6 +68,13 @@ footer a{color:var(--haze)}
       <span class="badge">פרטיות מקומית</span>
       <span class="badge">קוד פתוח</span>
     </div>
+
+    <p class="screens-cap">צילומי מסך מהגרסה האנגלית של האפליקציה</p>
+    <div class="screens">
+      <img src="./screenshots/landing-substances.png" alt="מסך החומרים: ארבעה חומרים פעילים עם עקומות עלייה/דעיכה בו-זמנית" loading="lazy">
+      <img src="./screenshots/landing-insights.png" alt="מסך המשמעויות: עקומת עוצמה משולבת עם התרעה על שילוב מסוכן" loading="lazy">
+    </div>
+
     <div class="actions">
       <a class="btn btn-primary" href="https://github.com/yairixStudio/safesub/releases/download/v0.1.0-beta/app-release.apk">
         <svg class="svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
@@ -90,7 +100,7 @@ footer a{color:var(--haze)}
 
     <footer>
       לקהל בגיל 18+ שכבר עושה בחירות — לא לעידוד שימוש.<br>
-      <a href="https://github.com/yairixStudio/safesub/blob/main/docs/methodology.md">מתודולוגיה ומקורות</a> ·
+      <a href="./methodology.html">מתודולוגיה ומקורות</a> ·
       <a href="https://github.com/yairixStudio/safesub">קוד המקור</a>
     </footer>
   </div>

@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="he" dir="rtl" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>safesub — מתודולוגיה ומקורות</title>
+<meta name="description" content="איך safesub מחשבת עקומות פרמקוקינטיות ומזהה חפיפות מסוכנות: הפרמטרים, האימות מול הספרות, טבלת המקורות המלאה, ומגבלות המודל הידועות.">
+<link rel="icon" href="./favicon.png">
+<style>
+:root{
+  --ink:#0A0D11; --slate-1:#12171E; --slate-2:#181F28; --slate-3:#212B36;
+  --line:#1E2630; --line-hard:#28323E;
+  --bone:#E7ECF2; --haze:#93A1B1; --dust:#5C6A79;
+  --iris:#8B9DF7; --iris-hover:#9BABF9; --on-accent:#0C1020;
+  --ember:#E3A54F; --clay:#E0766B; --leaf:#6FC28A;
+  --sans:"IBM Plex Sans Hebrew",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans);color:var(--bone);background:#0F1216;
+  background-image:radial-gradient(1100px 700px at 50% -10%,#191E26 0%,#0F1216 62%);
+  min-height:100vh; line-height:1.65;
+}
+a{color:var(--iris)}
+a:hover{color:var(--iris-hover)}
+.top{
+  position:sticky;top:0;z-index:5;backdrop-filter:blur(10px);
+  background:color-mix(in srgb,var(--ink) 78%,transparent);
+  border-bottom:1px solid var(--line);
+  padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.top .brand{font-weight:700;font-size:1.05rem}
+.top .brand b{color:var(--iris);font-weight:700}
+.top a.back{
+  font-size:.85rem;color:var(--haze);text-decoration:none;border:1px solid var(--line-hard);
+  border-radius:999px;padding:6px 14px;display:inline-flex;align-items:center;gap:6px;
+}
+.top a.back:hover{color:var(--bone);border-color:var(--iris)}
+
+.wrap{max-width:820px;margin:0 auto;padding:36px 20px 80px}
+.kicker{color:var(--dust);font-family:var(--mono);font-size:.78rem;letter-spacing:.02em;margin-bottom:10px}
+h1{font-size:1.9rem;letter-spacing:-.01em;margin-bottom:14px}
+.lead{color:var(--haze);font-size:1.02rem;max-width:640px;margin-bottom:8px}
+.meta{color:var(--dust);font-size:.82rem;margin-bottom:36px}
+.meta a{color:var(--dust);text-decoration:underline}
+
+nav.toc{
+  background:var(--slate-1);border:1px solid var(--line);border-radius:16px;
+  padding:16px 18px;margin-bottom:40px;
+}
+nav.toc .h{font-family:var(--mono);font-size:.75rem;color:var(--dust);margin-bottom:10px;letter-spacing:.02em}
+nav.toc ol{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 18px}
+nav.toc li a{font-size:.9rem;text-decoration:none;color:var(--haze)}
+nav.toc li a:hover{color:var(--iris)}
+@media (max-width:560px){nav.toc ol{grid-template-columns:1fr}}
+
+section{margin-bottom:52px;scroll-margin-top:76px}
+section h2{
+  font-size:1.25rem;margin-bottom:6px;display:flex;align-items:center;gap:10px;
+}
+section h2 .n{font-family:var(--mono);color:var(--iris);font-size:.8rem;font-weight:400}
+section > p.sub{color:var(--haze);font-size:.92rem;margin-bottom:18px;max-width:640px}
+section p{color:var(--haze);margin-bottom:14px}
+section p:last-child{margin-bottom:0}
+section strong{color:var(--bone);font-weight:600}
+code{
+  font-family:var(--mono);font-size:.85em;background:var(--slate-2);
+  border:1px solid var(--line-hard);border-radius:5px;padding:1px 6px;color:var(--iris);
+}
+
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;margin-bottom:6px;background:var(--slate-1)}
+table{border-collapse:collapse;width:100%;font-size:.85rem;white-space:nowrap}
+table.wrap-text{white-space:normal}
+th,td{padding:10px 14px;text-align:right;border-bottom:1px solid var(--line)}
+th{color:var(--dust);font-weight:600;font-family:var(--mono);font-size:.72rem;letter-spacing:.02em;text-transform:none;background:var(--slate-2);position:sticky;top:0}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--slate-2)}
+td.num{font-family:var(--mono);color:var(--haze)}
+td .cite{color:var(--dust);font-size:.82em}
+
+.pillrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.pill{
+  font-family:var(--mono);font-size:.76rem;border-radius:999px;padding:4px 12px;
+  border:1px solid var(--line-hard);
+}
+.pill.A{color:var(--leaf);border-color:color-mix(in srgb,var(--leaf) 40%,var(--line-hard))}
+.pill.B{color:var(--ember);border-color:color-mix(in srgb,var(--ember) 40%,var(--line-hard))}
+.pill.C{color:var(--clay);border-color:color-mix(in srgb,var(--clay) 40%,var(--line-hard))}
+
+.stricter td:nth-child(3){color:var(--clay)}
+
+.srclist{list-style:none;display:flex;flex-direction:column;gap:8px}
+.srclist li{
+  background:var(--slate-1);border:1px solid var(--line);border-radius:10px;
+  padding:10px 14px;font-size:.87rem;color:var(--haze);
+}
+.srclist li b{color:var(--bone)}
+.srclist a{word-break:break-word}
+
+ol.limits{padding-inline-start:20px;color:var(--haze)}
+ol.limits li{margin-bottom:12px}
+ol.limits li:last-child{margin-bottom:0}
+ol.limits b{color:var(--bone)}
+
+.callout{
+  border:1px solid color-mix(in srgb,var(--iris) 35%,var(--line-hard));
+  background:color-mix(in srgb,var(--iris) 7%,var(--slate-1));
+  border-radius:14px;padding:16px 18px;margin-bottom:20px;font-size:.9rem;color:var(--haze);
+}
+.callout b{color:var(--bone)}
+
+footer{
+  border-top:1px solid var(--line);margin-top:20px;padding-top:24px;
+  color:var(--dust);font-size:.82rem;text-align:center;line-height:1.8;
+}
+footer a{color:var(--haze)}
+</style>
+</head>
+<body>
+  <div class="top">
+    <div class="brand">safe<b>sub</b></div>
+    <a class="back" href="./index.html">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l-7-7 7-7"/><path d="M5 12h14"/></svg>
+      חזרה לעמוד הבית
+    </a>
+  </div>
+
+  <div class="wrap">
+    <div class="kicker">דוקומנטציה</div>
+    <h1>מתודולוגיה — מקורות הנתונים הפרמקוקינטיים ומטריצת הסיכונים</h1>
+    <p class="lead">איך safesub מחשבת מה פעיל בגוף עכשיו, על סמך אילו נתונים, ומה גבולות המודל. זה לא ייעוץ רפואי — זו שקיפות מלאה על ההערכה שמאחורי כל עקומה.</p>
+    <p class="meta">עודכן: <b>2026-08-31</b> · המקור הגולמי: <a href="https://github.com/yairixStudio/safesub/blob/main/docs/methodology.md">methodology.md בגיטהאב</a> · נדרש לפי מדיניות חנויות האפליקציות (App Store 1.4.1)</p>
+
+    <nav class="toc" aria-label="תוכן עניינים">
+      <div class="h">בעמוד הזה</div>
+      <ol>
+        <li><a href="#model">מה המודל, ומה הוא לא</a></li>
+        <li><a href="#verify">אימות מול הספרות (2026-08-31)</a></li>
+        <li><a href="#sources">טבלת המקורות המלאה</a></li>
+        <li><a href="#matrix">מטריצת האינטראקציות</a></li>
+        <li><a href="#reading">מקורות מרכזיים לקריאה ישירה</a></li>
+        <li><a href="#limits">גבולות ידועים</a></li>
+      </ol>
+    </nav>
+
+    <section id="model">
+      <h2><span class="n">01</span> מה המודל, ומה הוא לא</h2>
+      <p class="sub">כל עקומה ב-safesub היא <strong>הערכת אוכלוסייה, לא מדידה</strong>. המנוע (חד-תאי, מסדר ראשון; אלכוהול מסדר-אפס; מודל נפרד למורף לאכילים ולשחרור מושהה) מקבל שלושה פרמטרים לכל חומר:</p>
+
+      <div class="tblwrap">
+        <table class="wrap-text">
+          <thead><tr><th>פרמטר</th><th>משמעות</th><th>מקור טיפוסי</th></tr></thead>
+          <tbody>
+            <tr><td><code>tp</code></td><td>דקות עד שיא (מרישום ועד שיא ההשפעה המורגשת)</td><td>tmax פלזמה, מתוקן לפי ספרות אפקט סובייקטיבי</td></tr>
+            <tr><td><code>hl</code></td><td>מחצית חיים אפקטיבית של הדעיכה המורגשת (דקות)</td><td>t½ אלימינציה; כשהאפקט קצר מהפלזמה — פרמטר-אפקט מוצהר</td></tr>
+            <tr><td><code>dur</code></td><td>חלון אקוטי משוער (דקות)</td><td>ספרות אפקט סובייקטיבי</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="margin-top:18px"><code>ev</code> מדרג את חוזק הביסוס, ומוצג למשתמש במסך הלמידה:</p>
+      <div class="pillrow">
+        <span class="pill A">A — נתוני PK אנושיים מוצקים</span>
+        <span class="pill B">B — נתונים בינוניים / מוסקים מנתיב דומה</span>
+        <span class="pill C">C — דלים / אקסטרפולציה</span>
+      </div>
+
+      <div class="callout">
+        <b>שונות בין-אישית גדולה בכוונה אינה במודל</b> (CYP2D6/CYP1A2, משקל, מין, כבד, סבילות) — היא מוצגת טקסטואלית בלבד, לא כמשתנה מספרי. <b>אין במסד שום נתון מינון.</b>
+      </div>
+    </section>
+
+    <section id="verify">
+      <h2><span class="n">02</span> אימות מול הספרות (2026-08-31)</h2>
+      <p class="sub">נבדקו כ-35 רשומות מפתח מול מקורות קליניים. ארבעה ערכים תוקנו בעקבות האימות, אחד שודרג במטריצת האינטראקציות:</p>
+      <div class="tblwrap">
+        <table class="wrap-text">
+          <thead><tr><th>תיקון</th><th>לפני → אחרי</th><th>מקור</th></tr></thead>
+          <tbody>
+            <tr><td>קוקאין <code>tp</code></td><td>20 → <strong>30 דק׳</strong></td><td class="cite">tmax תוך-אפי ~26±20 דק׳ (McGrath 2020); 15–60 דק׳ (Jeffcoat)</td></tr>
+            <tr><td>מסקלין <code>hl</code></td><td>360 → <strong>210 דק׳</strong></td><td class="cite">t½ ≈3.5 שע׳ (Basel, Ley 2024)</td></tr>
+            <tr><td>גת <code>hl</code></td><td>190 → <strong>120 דק׳</strong></td><td class="cite">קתינון t½ 1.5±0.8 שע׳ (Toennes 2003)</td></tr>
+            <tr><td>גז צחוק <code>hl</code></td><td>3 → <strong>5 דק׳</strong></td><td class="cite">t½ אלימינציה ~5 דק׳ (דו-תאי 2.4/31 דק׳)</td></tr>
+            <tr><td>סנוס <code>tp</code></td><td>30 → <strong>60 דק׳</strong></td><td class="cite">tmax ~1 שע׳ (Digard 2013, NTR)</td></tr>
+            <tr><td>DXM+SSRI</td><td>לא בטוח → <strong>מסוכן</strong></td><td class="cite">TripSit: Dangerous; דיווחי תסמונת סרוטונין</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="sources">
+      <h2><span class="n">03</span> טבלת המקורות (רשומות מרכזיות)</h2>
+      <p class="sub">tp/hl/dur כפי שמופיעים במסד (בדקות), והביסוס העיקרי לכל אחד. הטבלה גוללת אופקית במסכים צרים.</p>
+      <div class="tblwrap">
+        <table>
+          <thead><tr><th>חומר</th><th>tp/hl/dur (דק׳)</th><th>ביסוס עיקרי</th></tr></thead>
+          <tbody>
+            <tr><td>ניקוטין (סיגריה)</td><td class="num">9/120/35</td><td class="cite">t½ ~2 שע׳; הצטברות לאורך יום (Benowitz; SGR 1988)</td></tr>
+            <tr><td>פאוץ׳/מסטיק/סנוס</td><td class="num">30–60/120/45–60</td><td class="cite">tmax 30–60 דק׳ (Digard 2013; Nicorette PI)</td></tr>
+            <tr><td>קפאין (קפה/תה/אנרגיה)</td><td class="num">40–45/280–300/120–240</td><td class="cite">t½ 4–5 שע׳, טווח 1.5–9.5; tmax 30–60 דק׳ (StatPearls; Alsabri 2018)</td></tr>
+            <tr><td>אלכוהול</td><td class="num">35/קצב ~מנה·שע׳/90</td><td class="cite">סדר-אפס ~0.015 g/dL·h (Jones; StatPearls Zero-Order)</td></tr>
+            <tr><td>THC בעישון</td><td class="num">10/120/180</td><td class="cite">שיא פלזמה 3–10 דק׳; אפקט מרבי 15–30 דק׳, דועך 2–3 שע׳ (Grotenhermen 2003; Huestis 2005)</td></tr>
+            <tr><td>אכיל (מורף)</td><td class="num">עיכוב 60–150</td><td class="cite">ספיגה איטית ולא-צפויה (Grotenhermen)</td></tr>
+            <tr><td>MDMA</td><td class="num">120/510/300</td><td class="cite">t½ 8–9 שע׳; tmax ~2 שע׳; לא-לינארי CYP2D6 (de la Torre; Huestis 2025 popPK)</td></tr>
+            <tr><td>קוקאין</td><td class="num">30/75/75</td><td class="cite">t½ ~1–1.5 שע׳; tmax IN ~26–36 דק׳ (Cone; McGrath 2020)</td></tr>
+            <tr><td>מתאמפטמין</td><td class="num">30/600/480</td><td class="cite">t½ 10.1 שע׳ (6.4–15) (Cruickshank 2009)</td></tr>
+            <tr><td>ד-אמפטמין (אטנט/וייבנס)</td><td class="num">180/600/420</td><td class="cite">tmax ~3 שע׳ IR; t½ 10–12 שע׳ (StatPearls; FDA label)</td></tr>
+            <tr><td>מתילפנידאט</td><td class="num">90/180/210; LA: 120/360</td><td class="cite">t½ ~2–3.5 שע׳; קונצרטה ~12 שע׳ חלון (FDA Concerta label)</td></tr>
+            <tr><td>מפדרון/קתינונים</td><td class="num">45/130/150</td><td class="cite">t½ 2.15 שע׳ (Papaseit 2016, Neuropsychopharmacology)</td></tr>
+            <tr><td>גת</td><td class="num">120/120/180</td><td class="cite">קתינון t½ 1.5 שע׳; tmax 1.5–2.5 שע׳ (Toennes 2003)</td></tr>
+            <tr><td>LSD</td><td class="num">120/210/540</td><td class="cite">t½ 3.6 שע׳; tmax 1.7 שע׳; משך 8.2–11.6 שע׳ (Dolder/Holze/Liechti)</td></tr>
+            <tr><td>פסילוסיבין</td><td class="num">120/150/360</td><td class="cite">פסילוצין t½ 1.4–3 שע׳; tmax ~2 שע׳; משך 5.5–6.4 שע׳ (Holze 2023)</td></tr>
+            <tr><td>2C-B</td><td class="num">90/120/300</td><td class="cite">onset 0.5–1.2 שע׳; t½ 1.2–2.5 שע׳; משך 3–5 שע׳ (Papaseit 2018)</td></tr>
+            <tr><td>מסקלין</td><td class="num">120/210/600</td><td class="cite">tmax ~2 שע׳; t½ ~3.5 שע׳; משך ~9–11 שע׳ (Ley 2024)</td></tr>
+            <tr><td>DMT בעישון</td><td class="num">3/15/15</td><td class="cite">שיא 2–8 דק׳; משך &lt;30 דק׳ (Strassman; MNT)</td></tr>
+            <tr><td>קטמין</td><td class="num">22/180/55</td><td class="cite">tmax IN 22.5 דק׳; t½ 2–3 שע׳; נורקטמין t½ ~12 שע׳ (Drugs.com monograph; Yanagihara)</td></tr>
+            <tr><td>GHB</td><td class="num">45/40/120</td><td class="cite">t½ ~35 דק׳; tmax 20–60 דק׳ (Xyrem PI; Abanades)</td></tr>
+            <tr><td>גז צחוק</td><td class="num">1/5/3</td><td class="cite">t½ ~5 דק׳, ריאתי (StatPearls; Lindholm 2026)</td></tr>
+            <tr><td>בנזודיאזפינים</td><td class="num">—</td><td class="cite">אלפרזולם ~12; קלונאזפאם 20–80; דיאזפאם ~43+; לוראזפאם 10–20; זולפידם ~2.5; ברוטיזולם 3.6–7.9 שע׳ (Griffin; PsychiatryRx; Springer)</td></tr>
+            <tr><td>אוקסיקודון</td><td class="num">60/210/300</td><td class="cite">t½ 3–5 שע׳ IR (StatPearls)</td></tr>
+            <tr><td>טרמדול</td><td class="num">120/360/360</td><td class="cite">t½ ~6 שע׳ (9+ במנת-יתר) (Hassanian-Moghaddam 2015)</td></tr>
+            <tr><td>קודאין</td><td class="num">60/180/270</td><td class="cite">t½ ~3 שע׳; CYP2D6 → מורפין</td></tr>
+            <tr><td>הרואין</td><td class="num">15/180/240</td><td class="cite">הרואין t½ 2–6 דק׳ → 6-MAM 6–25 דק׳ → מורפין 2–4 שע׳; העקומה מודלת את שלב המורפין (StatPearls Heroin)</td></tr>
+            <tr><td>פנטניל</td><td class="num">5/220/60</td><td class="cite">t½ 3–7 שע׳ (רה-דיסטריבוציה שומנית)</td></tr>
+            <tr><td>מתדון</td><td class="num">chronic</td><td class="cite">t½ 8–59 שע׳, הצטברות (StatPearls)</td></tr>
+            <tr><td>בופרנורפין</td><td class="num">chronic</td><td class="cite">t½ 24–42 שע׳ (Suboxone PI)</td></tr>
+            <tr><td>פרגבלין</td><td class="num">90/380/480</td><td class="cite">t½ 6.3 שע׳ מבוגרים (Lyrica PI)</td></tr>
+            <tr><td>DXM</td><td class="num">150/240/360</td><td class="cite">t½ 2–4 שע׳ (EM); 2–24 שע׳ טווח CYP2D6 (StatPearls)</td></tr>
+            <tr><td>קראטום</td><td class="num">60/200/240</td><td class="cite">⚠️ מיטרגינין t½ טרמינלי ~24 שע׳ (Trakulsrichai 2015); <code>hl</code> כאן פרמטר-אפקט למשך המורגש (~3–4 שע׳) — לא t½ פלזמה. ev=C</td></tr>
+            <tr><td>מודפיניל</td><td class="num">150/780/600</td><td class="cite">t½ 12–15 שע׳ (Provigil PI)</td></tr>
+            <tr><td>קווטיאפין</td><td class="num">90/420/480</td><td class="cite">t½ ~7 שע׳ (StatPearls)</td></tr>
+            <tr><td>סילדנפיל</td><td class="num">60/240/240</td><td class="cite">t½ ~4 שע׳ (Viagra PI)</td></tr>
+            <tr><td>פסאודואפדרין</td><td class="num">120/360/300</td><td class="cite">t½ 5–8 שע׳ ב-pH שתן רגיל (Kanfer)</td></tr>
+            <tr><td>מלטונין</td><td class="num">50/50/120</td><td class="cite">t½ 40–60 דק׳ (Tordjman; PMC11510348)</td></tr>
+            <tr><td>אקמול</td><td class="num">45/150/270</td><td class="cite">t½ 2–3 שע׳ (StatPearls Acetaminophen)</td></tr>
+            <tr><td>איבופרופן</td><td class="num">90/120/360</td><td class="cite">t½ ~2 שע׳ (StatPearls Ibuprofen)</td></tr>
+            <tr><td>דיפירון</td><td class="num">90/160/300</td><td class="cite">MAA t½ 2.6–3.5 שע׳ (Levy 1995; Brinkman 2025)</td></tr>
+            <tr><td>SSRI/SNRI/ליתיום/MAOI</td><td class="num">chronic</td><td class="cite">steady-state; פלואוקסטין+נורפלואוקסטין שבועות (PI)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="matrix">
+      <h2><span class="n">04</span> מטריצת האינטראקציות</h2>
+      <p class="sub">בסיס: <strong>טבלת השילובים של TripSit</strong> (<a href="https://wiki.tripsit.me/wiki/Drug_combinations">wiki.tripsit.me/wiki/Drug_combinations</a>) + ספרות קלינית, בשלוש רמות רזולוציה: זוג מפורש → חומר×קטגוריה → קטגוריה×קטגוריה. אומתה מול הטבלה ב-2026-08-31.</p>
+
+      <p style="color:var(--bone);font-weight:600;margin-bottom:10px">מקומות שבהם אנחנו מחמירים מ-TripSit בכוונה</p>
+      <p class="sub" style="margin-top:-10px">צמצום נזקים בלי ניטור רפואי מצדיק סף זהירות גבוה יותר משיחת קהילה כללית:</p>
+      <div class="tblwrap">
+        <table class="wrap-text stricter">
+          <thead><tr><th>זוג</th><th>TripSit</th><th>safesub</th><th>נימוק</th></tr></thead>
+          <tbody>
+            <tr><td>MDMA + אלכוהול</td><td>Caution</td><td>לא בטוח</td><td class="cite">התייבשות/היפרתרמיה; ספרות ER</td></tr>
+            <tr><td>MDMA + קוקאין</td><td>Caution</td><td>לא בטוח</td><td class="cite">עומס קרדיווסקולרי כפול</td></tr>
+            <tr><td>אלכוהול + קנאביס</td><td>Low Risk & Synergy</td><td>זהירות</td><td class="cite">green-out, פגיעה מוטורית מוכפלת</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="margin-top:16px">ליתיום+פסיכדלים (<strong>מסוכן</strong> אצלנו) אינו בטבלת TripSit כלל — מבוסס סדרת מקרים (Nayak 2021: פרכוסים ב-47% מדיווחי שילוב ליתיום+פסיכדל).</p>
+    </section>
+
+    <section id="reading">
+      <h2><span class="n">05</span> מקורות מרכזיים לקריאה ישירה</h2>
+      <ul class="srclist">
+        <li><b>Benowitz NL</b> — Nicotine pharmacology; <a href="https://whyquit.com/CDC/SGR_1988_Chapter_2_Nicotine_Pharmacokinetics.pdf">SGR 1988 ch.2</a></li>
+        <li><b>StatPearls</b> — <a href="https://www.ncbi.nlm.nih.gov/books/NBK519490/">Caffeine</a> · <a href="https://www.ncbi.nlm.nih.gov/books/NBK499866/">Zero-Order Kinetics</a> · <a href="https://www.ncbi.nlm.nih.gov/books/NBK459145/">Quetiapine</a> · <a href="https://www.ncbi.nlm.nih.gov/books/NBK538502/">DXM Toxicity</a> · <a href="https://www.ncbi.nlm.nih.gov/books/NBK430736/">Heroin Toxicity</a> · <a href="https://www.ncbi.nlm.nih.gov/books/NBK585120/">Kratom</a> · <a href="https://www.ncbi.nlm.nih.gov/books/NBK532922/">Nitrous Oxide</a> · <a href="https://www.ncbi.nlm.nih.gov/books/NBK507808/">Dextroamphetamine</a></li>
+        <li><b>Dolder/Holze/Liechti</b> — <a href="https://academic.oup.com/ijnp/article/19/1/pyv072/2910049">LSD PK/PD</a>, <a href="https://bpspubs.onlinelibrary.wiley.com/doi/10.1111/bcp.15887">Holze 2024 BJCP</a></li>
+        <li><b>Holze 2023</b> — <a href="https://ascpt.onlinelibrary.wiley.com/doi/10.1002/cpt.2821">Psilocybin PK/PD, CPT</a></li>
+        <li><b>Ley 2024</b> — <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11442856/">Mescaline dose-response, Basel</a></li>
+        <li><b>Papaseit</b> — <a href="https://www.nature.com/articles/npp201675">2016, Mephedrone vs MDMA</a> · <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5859368/">2018, 2C-B</a></li>
+        <li><b>Huestis 2025</b> — <a href="https://ascpt.onlinelibrary.wiley.com/doi/10.1002/psp4.13282">MDMA popPK, CPT:PSP</a></li>
+        <li><b>McGrath 2020</b> — <a href="https://journals.sagepub.com/doi/10.1177/1945892419896241">Intranasal cocaine PK</a></li>
+        <li><b>Cruickshank 2009</b> — <a href="https://pubmed.ncbi.nlm.nih.gov/19426289/">Methamphetamine clinical pharmacology</a></li>
+        <li><b>Toennes 2003</b> — <a href="https://pubmed.ncbi.nlm.nih.gov/12848785/">Khat alkaloids PK</a></li>
+        <li><b>Grotenhermen 2003</b> — <a href="https://pubmed.ncbi.nlm.nih.gov/12648025/">Cannabinoid PK</a></li>
+        <li><b>Trakulsrichai 2015</b> — <a href="https://pubmed.ncbi.nlm.nih.gov/25995615/">Mitragynine PK in man</a></li>
+        <li><b>Brinkman 2025</b> — <a href="https://bpspubs.onlinelibrary.wiley.com/doi/full/10.1002/bcp.70101">Metamizole pharmacology, BJCP</a></li>
+        <li><b>TripSit</b> — <a href="https://wiki.tripsit.me/wiki/Drug_combinations">combination chart</a></li>
+        <li><b>FDA labels</b> — Concerta, Lyrica, Provigil, Viagra, Xyrem, Suboxone (accessdata.fda.gov)</li>
+      </ul>
+    </section>
+
+    <section id="limits">
+      <h2><span class="n">06</span> גבולות ידועים</h2>
+      <ol class="limits">
+        <li><b>קראטום</b> — פער מוצהר בין t½ פלזמה (יום) למשך האפקט (שעות); המודל עוקב אחר האפקט, לא אחר הפלזמה. ev=C.</li>
+        <li><b>MDMA</b> — קינטיקה לא-לינארית; המודל לינארי ומסומן כפחות מדויק (בקטלוג ובמסך הלמידה).</li>
+        <li><b>אכילים</b> — שונות הספיגה עצומה; המורף (עיכוב 60–150 דק׳) הוא מרכז הטווח, לא ערובה.</li>
+        <li><b>מינון-תלות</b> — פרמטר העוצמה היחסית שהמשתמש בוחר הוא סקלר גס, לא סימולציית ריכוז בדם.</li>
+        <li><b>חומרים בקטגוריית ev=C</b> (סינתטיים, 5-MeO-DMT, סלוויה) — הערכות גסות במוצהר, לא מדידה.</li>
+      </ol>
+    </section>
+
+    <footer>
+      זה מסמך שקיפות על המודל — לא ייעוץ רפואי ולא תחליף לו.<br>
+      <a href="./index.html">בחזרה לדף הבית</a> ·
+      <a href="https://github.com/yairixStudio/safesub/blob/main/docs/methodology.md">המקור הגולמי בגיטהאב</a> ·
+      <a href="https://github.com/yairixStudio/safesub">קוד המקור</a>
+    </footer>
+  </div>
+</body>
+</html>
