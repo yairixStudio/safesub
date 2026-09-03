@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="he" dir="rtl" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>safesub — צמצום נזקים, בזמן אמת</title>
+<meta name="description" content="safesub: אפליקציית מובייל בעברית לצמצום נזקים — מציגה מה פעיל בגוף כרגע ומתריעה על חפיפות מסוכנות בין חומרים.">
+<link rel="icon" href="./favicon.png">
+<style>
+:root{
+  --ink:#0A0D11; --slate-1:#12171E; --slate-2:#181F28; --slate-3:#212B36;
+  --line:#1E2630; --line-hard:#28323E;
+  --bone:#E7ECF2; --haze:#93A1B1; --dust:#5C6A79;
+  --iris:#8B9DF7; --iris-hover:#9BABF9; --on-accent:#0C1020;
+  --ember:#E3A54F; --clay:#E0766B; --leaf:#6FC28A;
+  --sans:"IBM Plex Sans Hebrew",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:var(--sans);color:var(--bone);background:#0F1216;
+  background-image:radial-gradient(1100px 700px at 50% -10%,#191E26 0%,#0F1216 62%);
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  padding:56px 20px 32px;
+}
+.wrap{max-width:560px;width:100%;display:flex;flex-direction:column;align-items:center;text-align:center}
+.icon{width:76px;height:76px;border-radius:20px;box-shadow:0 20px 50px -14px rgba(139,157,247,.35),0 0 0 1px var(--line-hard);margin-bottom:22px}
+h1{font-size:2rem;letter-spacing:-.01em;margin-bottom:10px}
+.tag{color:var(--haze);font-size:1.05rem;line-height:1.6;margin-bottom:30px;max-width:440px}
+.badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:34px}
+.badge{font-size:.78rem;color:var(--dust);border:1px solid var(--line-hard);background:var(--slate-1);border-radius:999px;padding:5px 12px}
+.actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:14px}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;font-size:.98rem;font-weight:600;
+  padding:13px 22px;border-radius:14px;text-decoration:none;transition:transform .15s ease,background .15s ease;
+  border:1px solid transparent;
+}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--iris);color:var(--on-accent)}
+.btn-primary:hover{background:var(--iris-hover)}
+.btn-secondary{background:var(--slate-1);color:var(--bone);border-color:var(--line-hard)}
+.btn-secondary:hover{background:var(--slate-2)}
+.svg{width:18px;height:18px;flex:none}
+.note{color:var(--dust);font-size:.82rem;max-width:420px;line-height:1.7;margin-top:10px}
+.note b{color:var(--haze);font-weight:600}
+.rules{
+  width:100%;margin-top:52px;border-top:1px solid var(--line);padding-top:30px;
+  display:grid;grid-template-columns:1fr 1fr;gap:14px;text-align:right;
+}
+.rule{background:var(--slate-1);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.rule .n{color:var(--iris);font-family:ui-monospace,monospace;font-size:.75rem;display:block;margin-bottom:6px}
+.rule p{font-size:.86rem;color:var(--haze);line-height:1.55}
+footer{margin-top:40px;color:var(--dust);font-size:.78rem;text-align:center;line-height:1.7}
+footer a{color:var(--haze)}
+@media (max-width:520px){.rules{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <img class="icon" src="./icon.png" alt="סמל safesub">
+    <h1>safesub</h1>
+    <p class="tag">מה פעיל בגוף שלך <b>עכשיו</b> — עקומות עלייה/שיא/דעיכה, והתרעה על חפיפות מסוכנות בין חומרים. לצמצום נזקים, לא לעידוד שימוש ולא לגמילה.</p>
+    <div class="badges">
+      <span class="badge">18+ בלבד</span>
+      <span class="badge">עברית · RTL</span>
+      <span class="badge">פרטיות מקומית</span>
+      <span class="badge">קוד פתוח</span>
+    </div>
+    <div class="actions">
+      <a class="btn btn-primary" href="https://github.com/yairixStudio/safesub/releases/download/v0.1.0-beta/app-release.apk">
+        <svg class="svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+        הורדת APK (בטא)
+      </a>
+      <a class="btn btn-secondary" href="https://github.com/yairixStudio/safesub">
+        <svg class="svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.1 3.3 9.42 7.88 10.95.58.1.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.52-1.34-1.28-1.7-1.28-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.4-5.27 5.68.42.36.78 1.08.78 2.18 0 1.57-.02 2.84-.02 3.23 0 .31.21.67.8.56A11.52 11.52 0 0 0 23.5 12c0-6.35-5.15-11.5-11.5-11.5Z"/></svg>
+        GitHub
+      </a>
+    </div>
+    <p class="note">
+      גרסת בטא ראשונית. ה-APK חתום ב-<b>debug keystore</b> ולא במפתח production —
+      אנדרואיד יציג אזהרת "מקור לא מוכר" בהתקנה; זה צפוי בשלב זה, לא באג.
+      יש לאפשר התקנה ממקורות לא ידועים כדי להתקין.
+    </p>
+
+    <div class="rules">
+      <div class="rule"><span class="n">01</span><p>לעולם לא מציגה מינונים, לוחות שימוש חוזר או הוראות הכנה — רק תזמון וחפיפות.</p></div>
+      <div class="rule"><span class="n">02</span><p>לא ייעוץ רפואי. הפניה תמיד זמינה לעזרה אנושית — מד״א 101, ער״ן 1201.</p></div>
+      <div class="rule"><span class="n">03</span><p>כל מספר הוא הערכה מהספרות, לא מדידה — שונות בין-אישית מוצגת בגלוי.</p></div>
+      <div class="rule"><span class="n">04</span><p>פרטיות בברירת מחדל: הנתונים על המכשיר בלבד, אין חשבון, אין ענן.</p></div>
+    </div>
+
+    <footer>
+      לקהל בגיל 18+ שכבר עושה בחירות — לא לעידוד שימוש.<br>
+      <a href="https://github.com/yairixStudio/safesub/blob/main/docs/methodology.md">מתודולוגיה ומקורות</a> ·
+      <a href="https://github.com/yairixStudio/safesub">קוד המקור</a>
+    </footer>
+  </div>
+</body>
+</html>
